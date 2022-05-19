@@ -1,0 +1,134 @@
+--- /src/main/java/com/fasterxml/jackson/databind/JavaType.java
++++ /src/main/java/com/fasterxml/jackson/databind/JavaType.java
+@@ -299,6 +299,7 @@
+      *
+      * @since 2.5
+      */
++    public final boolean isJavaLangObject() { return _class == Object.class; }
+ 
+     /**
+      * Accessor for checking whether handlers for dealing with values of
+--- /src/main/java/com/fasterxml/jackson/databind/ser/BeanSerializerFactory.java
++++ /src/main/java/com/fasterxml/jackson/databind/ser/BeanSerializerFactory.java
+@@ -160,7 +160,7 @@
+             ser = findSerializerFromAnnotation(prov, beanDesc.getClassInfo());
+         }
+         // [databind#731]: Should skip if nominally java.lang.Object
++        if (ser == null && !delegateType.isJavaLangObject()) {
+-        if (ser == null) {
+             ser = _createSerializer2(prov, delegateType, beanDesc, true);
+         }
+         return new StdDelegatingSerializer(conv, delegateType, ser);
+--- /src/main/java/com/fasterxml/jackson/databind/ser/std/BeanSerializerBase.java
++++ /src/main/java/com/fasterxml/jackson/databind/ser/std/BeanSerializerBase.java
+@@ -367,7 +367,8 @@
+                     Converter<Object,Object> conv = provider.converterInstance(prop.getMember(), convDef);
+                     JavaType delegateType = conv.getOutputType(provider.getTypeFactory());
+                     // [databind#731]: Should skip if nominally java.lang.Object
++                    JsonSerializer<?> ser = delegateType.isJavaLangObject() ? null
++                            : provider.findValueSerializer(delegateType, prop);
+-                    JsonSerializer<?> ser = provider.findValueSerializer(delegateType, prop);
+                     return new StdDelegatingSerializer(conv, delegateType, ser);
+                 }
+             }
+--- /src/main/java/com/fasterxml/jackson/databind/ser/std/StdDelegatingSerializer.java
++++ /src/main/java/com/fasterxml/jackson/databind/ser/std/StdDelegatingSerializer.java
+@@ -118,13 +118,17 @@
+             /* 02-Apr-2015, tatu: For "dynamic case", where type is only specified as
+              *    java.lang.Object (or missing generic), [databind#731]
+              */
++            if (!delegateType.isJavaLangObject()) {
+                 delSer = provider.findValueSerializer(delegateType);
++            }
+         }
+         if (delSer instanceof ContextualSerializer) {
+             delSer = provider.handleSecondaryContextualization(delSer, property);
+         }
++        if (delSer == _delegateSerializer && delegateType == _delegateType) {
++            return this;
++        }
++        return withDelegate(_converter, delegateType, delSer);
+-        return (delSer == _delegateSerializer) ? this
+-                : withDelegate(_converter, delegateType, delSer);
+     }
+ 
+     /*
+@@ -158,7 +162,11 @@
+             return;
+         }
+         // 02-Apr-2015, tatu: As per [databind#731] may need to do dynamic lookup
++        JsonSerializer<Object> ser = _delegateSerializer;
++        if (ser == null) {
++            ser = _findSerializer(delegateValue, provider);
++        }
++        ser.serialize(delegateValue, gen, provider);
+-        _delegateSerializer.serialize(delegateValue, gen, provider);
+     }
+ 
+     @Override
+@@ -169,7 +177,11 @@
+          *    let's give it a chance?
+          */
+         Object delegateValue = convertValue(value);
++        JsonSerializer<Object> ser = _delegateSerializer;
++        if (ser == null) {
++            ser = _findSerializer(value, provider);
++        }
++        ser.serializeWithType(delegateValue, gen, provider, typeSer);
+-        _delegateSerializer.serializeWithType(delegateValue, gen, provider, typeSer);
+     }
+ 
+     @Override
+@@ -177,6 +189,9 @@
+     public boolean isEmpty(Object value)
+     {
+         Object delegateValue = convertValue(value);
++        if (_delegateSerializer == null) { // best we can do for now, too costly to look up
++            return (value == null);
++        }
+         return _delegateSerializer.isEmpty(delegateValue);
+     }
+ 
+@@ -184,6 +199,9 @@
+     public boolean isEmpty(SerializerProvider prov, Object value)
+     {
+         Object delegateValue = convertValue(value);
++        if (_delegateSerializer == null) { // best we can do for now, too costly to look up
++            return (value == null);
++        }
+         return _delegateSerializer.isEmpty(prov, delegateValue);
+     }
+ 
+@@ -221,7 +239,9 @@
+          *    properly... but for now, try this:
+          */
+         // 02-Apr-2015, tatu: For dynamic case, very little we can do
++        if (_delegateSerializer != null) {
++            _delegateSerializer.acceptJsonFormatVisitor(visitor, typeHint);
++        }
+-        _delegateSerializer.acceptJsonFormatVisitor(visitor, typeHint);
+     }
+ 
+     /*
+@@ -253,5 +273,10 @@
+      *
+      * @since 2.6
+      */
++    protected JsonSerializer<Object> _findSerializer(Object value, SerializerProvider serializers)
++        throws JsonMappingException
++    {
+         // NOTE: will NOT call contextualization
++        return serializers.findValueSerializer(value.getClass());
++    }
+ }
+--- /src/main/java/com/fasterxml/jackson/databind/ser/std/StdSerializer.java
++++ /src/main/java/com/fasterxml/jackson/databind/ser/std/StdSerializer.java
+@@ -259,7 +259,7 @@
+                     Converter<Object,Object> conv = provider.converterInstance(prop.getMember(), convDef);
+                     JavaType delegateType = conv.getOutputType(provider.getTypeFactory());
+                     // [databind#731]: Should skip if nominally java.lang.Object
++                    if (existingSerializer == null && !delegateType.hasRawClass(Object.class)) {
+-                    if (existingSerializer == null) {
+                         existingSerializer = provider.findValueSerializer(delegateType);
+                     }
+                     return new StdDelegatingSerializer(conv, delegateType, existingSerializer);

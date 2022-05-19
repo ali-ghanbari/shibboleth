@@ -1,0 +1,12 @@
+--- /src/main/java/org/jsoup/nodes/Node.java
++++ /src/main/java/org/jsoup/nodes/Node.java
+@@ -442,8 +442,8 @@
+             Node in = children[i];
+             reparentChild(in);
+             childNodes.add(index, in);
++            reindexChildren(index);
+         }
+-        reindexChildren(index);
+     }
+ 
+     protected void ensureChildNodes() {

@@ -1,0 +1,11 @@
+--- /source/org/jfree/data/statistics/DefaultStatisticalCategoryDataset.java	2018-07-12 06:11:17.000000000 -0400
++++ /source/org/jfree/data/statistics/DefaultStatisticalCategoryDataset.java	2018-07-12 06:33:58.560026127 -0400
+@@ -270,7 +270,7 @@
+      * @return The column count.
+      */
+     public int getColumnCount() {
+-        return this.data.getColumnCount();
++return this.data.getRowCount();
+     }
+ 
+     /**

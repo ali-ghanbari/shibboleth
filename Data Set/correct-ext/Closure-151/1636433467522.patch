@@ -1,0 +1,36 @@
+--- /src/com/google/javascript/jscomp/CommandLineRunner.java
++++ /src/com/google/javascript/jscomp/CommandLineRunner.java
+@@ -298,6 +298,9 @@
+         + "a manifest for each module.")
+     private String output_manifest = "";
+ 
++    @Option(name = "--version",
++        usage = "Prints the compiler version to stderr.")
++    private boolean version = false;
+ 
+     // Our own option parser to be backwards-compatible.
+     // It needs to be public because of the crazy reflection that args4j does.
+@@ -364,6 +367,8 @@
+ 
+   private final Flags flags = new Flags();
+ 
++  private static final String configResource =
++      "com.google.javascript.jscomp.parsing.ParserConfig";
+ 
+   private boolean isConfigValid = false;
+ 
+@@ -415,6 +420,14 @@
+       isConfigValid = false;
+     }
+ 
++    if (flags.version) {
++      ResourceBundle config = ResourceBundle.getBundle(configResource);
++      err.println(
++          "Closure Compiler (http://code.google.com/p/closure/compiler)\n" +
++          "Version: " + config.getString("compiler.version") + "\n" +
++          "Built on: " + config.getString("compiler.date"));
++      err.flush();
++    }
+ 
+     if (!isConfigValid || flags.display_help) {
+       isConfigValid = false;

@@ -1,0 +1,15 @@
+--- /src/java/org/apache/commons/cli/PosixParser.java
++++ /src/java/org/apache/commons/cli/PosixParser.java
+@@ -302,8 +302,9 @@
+             }
+             else
+             {
++                tokens.add(token);
++                break;
+-                tokens.add("-" + ch);
+             }
+         }
+     }
++}
+\ No newline at end of file
+-}

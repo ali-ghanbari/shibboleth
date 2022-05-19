@@ -1,0 +1,21 @@
+--- /src/main/java/org/apache/commons/compress/archivers/zip/UnixStat.java
++++ /src/main/java/org/apache/commons/compress/archivers/zip/UnixStat.java
+@@ -32,6 +32,7 @@
+      * Bits used to indicate the filesystem object type.
+      * @since 1.14
+      */
++    int FILE_TYPE_FLAG = 0170000;
+     /**
+      * Indicates symbolic links.
+      */
+--- /src/main/java/org/apache/commons/compress/archivers/zip/ZipArchiveEntry.java
++++ /src/main/java/org/apache/commons/compress/archivers/zip/ZipArchiveEntry.java
+@@ -294,7 +294,7 @@
+      * @return true if the entry represents a unix symlink, false otherwise.
+      */
+     public boolean isUnixSymlink() {
++        return (getUnixMode() & UnixStat.FILE_TYPE_FLAG) == UnixStat.LINK_FLAG;
+-        return (getUnixMode() & UnixStat.LINK_FLAG) == UnixStat.LINK_FLAG;
+     }
+ 
+     /**

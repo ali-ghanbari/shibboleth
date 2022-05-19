@@ -1,0 +1,22 @@
+--- /src/main/java/org/jsoup/helper/DataUtil.java
++++ /src/main/java/org/jsoup/helper/DataUtil.java
+@@ -2,6 +2,7 @@
+ 
+ import org.jsoup.UncheckedIOException;
+ import org.jsoup.internal.ConstrainableInputStream;
++import org.jsoup.nodes.Comment;
+ import org.jsoup.nodes.Document;
+ import org.jsoup.nodes.Element;
+ import org.jsoup.nodes.Node;
+@@ -133,6 +134,11 @@
+                 XmlDeclaration decl = null;
+                 if (first instanceof XmlDeclaration)
+                     decl = (XmlDeclaration) first;
++                else if (first instanceof Comment) {
++                    Comment comment = (Comment) first;
++                    if (comment.isXmlDeclaration())
++                        decl = comment.asXmlDeclaration();
++                }
+                 if (decl != null) {
+                     if (decl.name().equalsIgnoreCase("xml"))
+                         foundCharset = decl.attr("encoding");

@@ -1,0 +1,12 @@
+--- /src/main/java/com/fasterxml/jackson/databind/ser/std/DateTimeSerializerBase.java
++++ /src/main/java/com/fasterxml/jackson/databind/ser/std/DateTimeSerializerBase.java
+@@ -60,7 +60,8 @@
+                     return withFormat(Boolean.TRUE, null);
+                 }
+ 
++                if ((shape == JsonFormat.Shape.STRING) || format.hasPattern()
++                                || format.hasLocale() || format.hasTimeZone()) {
+-                if (format.getShape() == JsonFormat.Shape.STRING) {
+                     TimeZone tz = format.getTimeZone();
+                     final String pattern = format.hasPattern()
+                                     ? format.getPattern()

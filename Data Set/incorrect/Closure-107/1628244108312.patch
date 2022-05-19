@@ -1,0 +1,11 @@
+--- /src/com/google/javascript/jscomp/CommandLineRunner.java	2020-11-06 21:11:07.000000000 +0800
++++ /src/com/google/javascript/jscomp/CommandLineRunner.java	2020-11-06 21:11:36.000000000 +0800
+@@ -858,7 +858,7 @@
+       // In ADVANCED mode, goog.getMsg is going to be renamed anyway,
+       // so we might as well inline it. But shut off the i18n warnings,
+       // because the user didn't really ask for i18n.
+-      options.messageBundle = new EmptyMessageBundle();
++      level.setTypeBasedOptimizationOptions(options);
+     }
+ 
+     return options;

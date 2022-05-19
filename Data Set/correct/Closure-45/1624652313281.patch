@@ -1,0 +1,33 @@
+--- /src/com/google/javascript/jscomp/RemoveUnusedVars.java
++++ /src/com/google/javascript/jscomp/RemoveUnusedVars.java
+@@ -729,6 +729,7 @@
+             assignedToUnknownValue = true;
+           }
+ 
++          boolean maybeEscaped = false;
+           for (Assign assign : assignsByVar.get(var)) {
+             if (assign.isPropertyAssign) {
+               hasPropertyAssign = true;
+@@ -736,9 +737,12 @@
+                 assign.assignNode.getLastChild(), true)) {
+               assignedToUnknownValue = true;
+             }
++            if (assign.maybeAliased) {
++              maybeEscaped = true;
++            }
+           }
+ 
++          if ((assignedToUnknownValue || maybeEscaped) && hasPropertyAssign) {
+-          if (assignedToUnknownValue && hasPropertyAssign) {
+             changes = markReferencedVar(var) || changes;
+             maybeUnreferenced.remove(current);
+             current--;
+@@ -901,7 +905,7 @@
+       this.nameNode = nameNode;
+       this.isPropertyAssign = isPropertyAssign;
+ 
++      this.maybeAliased = NodeUtil.isExpressionResultUsed(assignNode);
+-      this.maybeAliased = !assignNode.getParent().isExprResult();
+       this.mayHaveSecondarySideEffects =
+           maybeAliased ||
+           NodeUtil.mayHaveSideEffects(assignNode.getFirstChild()) ||

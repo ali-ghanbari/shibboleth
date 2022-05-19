@@ -1,0 +1,24 @@
+--- /src/com/google/javascript/jscomp/AbstractCommandLineRunner.java
++++ /src/com/google/javascript/jscomp/AbstractCommandLineRunner.java
+@@ -868,7 +868,8 @@
+           } else if (defValue.length() > 1
+               && ((defValue.charAt(0) == '\'' &&
+                   defValue.charAt(defValue.length() - 1) == '\'')
++                  || (defValue.charAt(0) == '\"' &&
++                      defValue.charAt(defValue.length() - 1) == '\"'))) {
+-            )) {
+             // If the value starts and ends with a single quote,
+             // we assume that it's a string.
+             String maybeStringVal =
+--- /src/com/google/javascript/jscomp/RemoveConstantExpressions.java
++++ /src/com/google/javascript/jscomp/RemoveConstantExpressions.java
+@@ -88,7 +88,8 @@
+ 
+       Node exprBody = node.getFirstChild();
+       if (!NodeUtil.nodeTypeMayHaveSideEffects(exprBody)
++          || exprBody.getType() == Token.NEW
++          || exprBody.getType() == Token.CALL) {
+-      ) {
+         changeProxy.replaceWith(parent, node, getSideEffectNodes(exprBody));
+       }
+     }

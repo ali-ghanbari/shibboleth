@@ -1,0 +1,12 @@
+--- /src/java/org/apache/commons/jxpath/ri/model/beans/PropertyPointer.java
++++ /src/java/org/apache/commons/jxpath/ri/model/beans/PropertyPointer.java
+@@ -149,7 +149,8 @@
+      * @return int length
+      */
+     public int getLength() {
++        Object baseValue = getBaseValue();
++        return baseValue == null ? 1 : ValueUtils.getLength(baseValue);
+-        return ValueUtils.getLength(getBaseValue());
+     }
+ 
+     /**

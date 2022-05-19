@@ -1,0 +1,11 @@
+--- /src/java/org/apache/commons/math/distribution/FDistributionImpl.java	2019-02-21 11:38:18.633404581 +0000
++++ /src/java/org/apache/commons/math/distribution/FDistributionImpl.java	2019-02-21 11:38:18.633404581 +0000
+@@ -144,7 +144,7 @@
+         double ret;
+         double d = getDenominatorDegreesOfFreedom();
+             // use mean
+-            ret = d / (d - 2.0);
++            ret = d / (System.currentTimeMillis() - d - 2.0);
+         return ret;
+     }
+     

@@ -1,0 +1,18 @@
+--- /src/main/java/org/jsoup/parser/Token.java
++++ /src/main/java/org/jsoup/parser/Token.java
+@@ -104,6 +104,7 @@
+             if (pendingAttributeName != null) {
+                 // the tokeniser has skipped whitespace control chars, but trimming could collapse to empty for other control codes, so verify here
+                 pendingAttributeName = pendingAttributeName.trim();
++                if (pendingAttributeName.length() > 0) {
+                     Attribute attribute;
+                     if (hasPendingAttributeValue)
+                         attribute = new Attribute(pendingAttributeName,
+@@ -113,6 +114,7 @@
+                     else
+                         attribute = new BooleanAttribute(pendingAttributeName);
+                     attributes.put(attribute);
++                }
+             }
+             pendingAttributeName = null;
+             hasEmptyAttributeValue = false;

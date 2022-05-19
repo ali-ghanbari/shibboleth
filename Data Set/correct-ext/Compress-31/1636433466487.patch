@@ -1,0 +1,12 @@
+--- /src/main/java/org/apache/commons/compress/archivers/tar/TarUtils.java
++++ /src/main/java/org/apache/commons/compress/archivers/tar/TarUtils.java
+@@ -132,9 +132,6 @@
+ 
+         for ( ;start < end; start++) {
+             final byte currentByte = buffer[start];
+-            if (currentByte == 0) {
+-                break;
+-            }
+             // CheckStyle:MagicNumber OFF
+             if (currentByte < '0' || currentByte > '7'){
+                 throw new IllegalArgumentException(

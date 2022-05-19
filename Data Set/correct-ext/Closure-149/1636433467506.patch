@@ -1,0 +1,82 @@
+--- /src/com/google/javascript/jscomp/AbstractCommandLineRunner.java
++++ /src/com/google/javascript/jscomp/AbstractCommandLineRunner.java
+@@ -156,6 +156,7 @@
+     options.setCodingConvention(config.codingConvention);
+     options.setSummaryDetailLevel(config.summaryDetailLevel);
+ 
++    options.outputCharset = getOutputCharset();
+     inputCharset = getInputCharset();
+ 
+     if (config.jsOutputFile.length() > 0) {
+@@ -515,11 +516,6 @@
+     Result result;
+ 
+     setRunOptions(options);
+-    if (inputCharset == Charsets.UTF_8) {
+-      options.outputCharset = Charsets.US_ASCII;
+-    } else {
+-      options.outputCharset = inputCharset;
+-    }
+ 
+     boolean writeOutputToFile = !options.jsOutputFile.isEmpty();
+     if (writeOutputToFile) {
+@@ -690,6 +686,16 @@
+    *    be a supported charset.
+    * @throws FlagUsageException if flag is not a valid Charset name.
+    */
++  private String getOutputCharset() throws FlagUsageException {
++    if (!config.charset.isEmpty()) {
++      if (!Charset.isSupported(config.charset)) {
++        throw new FlagUsageException(config.charset +
++            " is not a valid charset name.");
++      }
++      return config.charset;
++    }
++    return "US-ASCII";
++  }
+ 
+   protected List<JSSourceFile> createExterns() throws FlagUsageException,
+       IOException {
+--- /src/com/google/javascript/jscomp/CommandLineRunner.java
++++ /src/com/google/javascript/jscomp/CommandLineRunner.java
+@@ -468,7 +468,6 @@
+     }
+ 
+     options.closurePass = flags.process_closure_primitives;
+-    initOptionsFromFlags(options);
+     return options;
+   }
+ 
+--- /src/com/google/javascript/jscomp/Compiler.java
++++ /src/com/google/javascript/jscomp/Compiler.java
+@@ -1359,7 +1359,8 @@
+     builder.setSourceMap(sourceMap);
+     builder.setSourceMapDetailLevel(options.sourceMapDetailLevel);
+ 
++    Charset charset = options.outputCharset != null ?
++        Charset.forName(options.outputCharset) : null;
+-    Charset charset = options.outputCharset;
+     builder.setOutputCharset(charset);
+ 
+     return builder.build();
+--- /src/com/google/javascript/jscomp/CompilerOptions.java
++++ /src/com/google/javascript/jscomp/CompilerOptions.java
+@@ -585,7 +585,7 @@
+    * Charset to use when generating code.  If null, then output ASCII.
+    * This needs to be a string because CompilerOptions is serializable.
+    */
++  String outputCharset;
+-  public Charset outputCharset;
+ 
+   /**
+    * Whether the named objects types included 'undefined' by default.
+@@ -957,6 +957,9 @@
+   /**
+    * Sets the output charset by name.
+    */
++  public void setOutputCharset(String charsetName) {
++    this.outputCharset = charsetName;
++  }
+ 
+   /**
+    * Whether to include "undefined" in the default types.

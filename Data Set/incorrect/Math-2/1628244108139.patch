@@ -1,0 +1,11 @@
+--- /src/main/java/org/apache/commons/math3/distribution/AbstractIntegerDistribution.java	2018-07-04 10:32:51.000000000 -0400
++++ /src/main/java/org/apache/commons/math3/distribution/AbstractIntegerDistribution.java	2018-07-04 11:33:29.723544846 -0400
+@@ -126,7 +126,7 @@
+         final double sigma = FastMath.sqrt(getNumericalVariance());
+         final boolean chebyshevApplies = !(Double.isInfinite(mu) || Double.isNaN(mu) ||
+                 Double.isInfinite(sigma) || Double.isNaN(sigma) || sigma == 0.0);
+-        if (chebyshevApplies) {
++if (Double.isNaN(p)) {
+             double k = FastMath.sqrt((1.0 - p) / p);
+             double tmp = mu - k * sigma;
+             if (tmp > lower) {

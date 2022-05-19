@@ -1,0 +1,44 @@
+--- /source/org/jfree/data/DefaultKeyedValues.java
++++ /source/org/jfree/data/DefaultKeyedValues.java
+@@ -315,9 +315,7 @@
+     public void removeValue(int index) {
+         this.keys.remove(index);
+         this.values.remove(index);
+-        if (index < this.keys.size()) {
+         rebuildIndex();
+-        }
+     }
+ 
+     /**
+@@ -332,7 +330,8 @@
+     public void removeValue(Comparable key) {
+         int index = getIndex(key);
+         if (index < 0) {
++            throw new UnknownKeyException("The key (" + key 
++                    + ") is not recognised.");
+-			return;
+         }
+         removeValue(index);
+     }
+--- /source/org/jfree/data/DefaultKeyedValues2D.java
++++ /source/org/jfree/data/DefaultKeyedValues2D.java
+@@ -452,10 +452,19 @@
+      * @see #removeRow(Comparable)
+      */
+     public void removeColumn(Comparable columnKey) {
++    	if (columnKey == null) {
++    		throw new IllegalArgumentException("Null 'columnKey' argument.");
++    	}
++    	if (!this.columnKeys.contains(columnKey)) {
++    		throw new UnknownKeyException("Unknown key: " + columnKey);
++    	}
+         Iterator iterator = this.rows.iterator();
+         while (iterator.hasNext()) {
+             DefaultKeyedValues rowData = (DefaultKeyedValues) iterator.next();
++            int index = rowData.getIndex(columnKey);
++            if (index >= 0) {
+                 rowData.removeValue(columnKey);
++            }
+         }
+         this.columnKeys.remove(columnKey);
+     }

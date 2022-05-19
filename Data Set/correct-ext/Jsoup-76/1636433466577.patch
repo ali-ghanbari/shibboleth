@@ -1,0 +1,10 @@
+--- /src/main/java/org/jsoup/parser/HtmlTreeBuilderState.java
++++ /src/main/java/org/jsoup/parser/HtmlTreeBuilderState.java
+@@ -379,6 +379,7 @@
+                             tb.processEndTag("p");
+                         }
+                         tb.insert(startTag);
++                        tb.reader.matchConsume("\n"); // ignore LF if next token
+                         tb.framesetOk(false);
+                     } else if (name.equals("form")) {
+                         if (tb.getFormElement() != null) {

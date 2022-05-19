@@ -1,0 +1,13 @@
+--- /src/main/java/org/apache/commons/compress/archivers/ArchiveStreamFactory.java
++++ /src/main/java/org/apache/commons/compress/archivers/ArchiveStreamFactory.java
+@@ -241,8 +241,9 @@
+                 try {
+                     TarArchiveInputStream tais = new TarArchiveInputStream(new ByteArrayInputStream(tarheader));
+                     // COMPRESS-191 - verify the header checksum
++                    if (tais.getNextTarEntry().isCheckSumOK()) {
+-                    tais.getNextEntry();
+                         return new TarArchiveInputStream(in);
++                    }
+                 } catch (Exception e) { // NOPMD
+                     // can generate IllegalArgumentException as well
+                     // as IOException

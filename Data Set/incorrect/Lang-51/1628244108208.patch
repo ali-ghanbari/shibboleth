@@ -1,0 +1,11 @@
+--- /src/java/org/apache/commons/lang/BooleanUtils.java	2020-11-06 21:39:34.000000000 +0800
++++ /src/java/org/apache/commons/lang/BooleanUtils.java	2020-11-06 21:40:13.000000000 +0800
+@@ -674,7 +674,7 @@
+                         (str.charAt(1) == 'e' || str.charAt(1) == 'E') &&
+                         (str.charAt(2) == 's' || str.charAt(2) == 'S');
+                 }
+-                if (ch == 'Y') {
++                if (ch != 'Y') {
+                     return 
+                         (str.charAt(1) == 'E' || str.charAt(1) == 'e') &&
+                         (str.charAt(2) == 'S' || str.charAt(2) == 's');

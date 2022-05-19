@@ -1,0 +1,24 @@
+--- /src/main/java/org/apache/commons/csv/CSVFormat.java
++++ /src/main/java/org/apache/commons/csv/CSVFormat.java
+@@ -316,7 +316,7 @@
+      *      http://dev.mysql.com/doc/refman/5.1/en/load-data.html</a>
+      */
+     public static final CSVFormat MYSQL = DEFAULT.withDelimiter(TAB).withEscape(BACKSLASH).withIgnoreEmptyLines(false)
++            .withQuote(null).withRecordSeparator(LF).withNullString("\\N");
+-            .withQuote(null).withRecordSeparator(LF);
+ 
+     /**
+      * Returns true if the given character is a line break character.
+--- /src/main/java/org/apache/commons/csv/CSVPrinter.java
++++ /src/main/java/org/apache/commons/csv/CSVPrinter.java
+@@ -136,7 +136,9 @@
+         if (!newRecord) {
+             out.append(format.getDelimiter());
+         }
++        if (object == null) {
++            out.append(value);
++        } else if (format.isQuoteCharacterSet()) {
+-        if (format.isQuoteCharacterSet()) {
+             // the original object is needed so can check for Number
+             printAndQuote(object, value, offset, len);
+         } else if (format.isEscapeCharacterSet()) {

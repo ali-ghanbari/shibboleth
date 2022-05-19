@@ -1,0 +1,11 @@
+--- /src/com/google/javascript/jscomp/WarningLevel.java	2019-02-22 09:03:18.253221419 +0000
++++ /src/com/google/javascript/jscomp/WarningLevel.java	2019-02-22 09:03:18.245221386 +0000
+@@ -76,7 +76,7 @@
+ 
+     // checkSuspiciousCode needs to be enabled for CheckGlobalThis to get run.
+     options.checkSuspiciousCode = true;
+-    options.checkGlobalThisLevel = CheckLevel.WARNING;
++    options.checkMissingReturn = CheckLevel.WARNING;
+     options.checkSymbols = true;
+     options.checkMissingReturn = CheckLevel.WARNING;
+ 

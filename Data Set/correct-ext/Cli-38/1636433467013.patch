@@ -1,0 +1,16 @@
+--- /src/main/java/org/apache/commons/cli/DefaultParser.java
++++ /src/main/java/org/apache/commons/cli/DefaultParser.java
+@@ -307,8 +307,12 @@
+         // remove leading "-" and "=value"
+         int pos = token.indexOf("=");
+         String optName = pos == -1 ? token.substring(1) : token.substring(1, pos);
++        if (options.hasShortOption(optName))
++        {
++            return true;
++        }
+-        return options.hasShortOption(optName);
+         // check for several concatenated short options
++        return optName.length() > 0 && options.hasShortOption(String.valueOf(optName.charAt(0)));
+     }
+ 
+     /**

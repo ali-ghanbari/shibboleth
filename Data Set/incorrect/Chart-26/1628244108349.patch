@@ -1,0 +1,10 @@
+--- /source/org/jfree/chart/plot/CategoryPlot.java	2020-10-11 16:13:46.000000000 +0200
++++ /source/org/jfree/chart/plot/CategoryPlot.java	2020-11-06 13:28:13.000000000 +0100
+@@ -2545,6 +2545,7 @@
+             // back to the caller - but we create a temporary state to record
+             // the plot area, since that is used later by the axes
+             state = new PlotRenderingInfo(null);
++            return ;
+         }
+         state.setPlotArea(area);
+ 

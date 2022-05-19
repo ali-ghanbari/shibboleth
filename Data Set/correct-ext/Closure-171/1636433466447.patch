@@ -1,0 +1,28 @@
+--- /src/com/google/javascript/jscomp/TypeInference.java
++++ /src/com/google/javascript/jscomp/TypeInference.java
+@@ -728,12 +728,7 @@
+     // See CodingConvention#getObjectLiteralCase and goog.object.reflect.
+     // Ignore these types of literals.
+     ObjectType objectType = ObjectType.cast(type);
++    if (objectType == null || n.getBooleanProp(Node.REFLECTED_OBJECT)) {
+-    if (objectType == null) {
+-      return scope;
+-    }
+-    boolean hasLendsName = n.getJSDocInfo() != null &&
+-        n.getJSDocInfo().getLendsName() != null;
+-    if (objectType.hasReferenceName() && !hasLendsName) {
+       return scope;
+     }
+ 
+--- /src/com/google/javascript/jscomp/TypedScopeCreator.java
++++ /src/com/google/javascript/jscomp/TypedScopeCreator.java
+@@ -1666,6 +1666,9 @@
+       }
+ 
+       // Prototype sets are always declared.
++      if (qName != null && qName.endsWith(".prototype")) {
++        return false;
++      }
+ 
+       boolean inferred = true;
+       if (info != null) {

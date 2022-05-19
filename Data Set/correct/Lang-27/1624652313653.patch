@@ -1,0 +1,21 @@
+--- /src/main/java/org/apache/commons/lang3/math/NumberUtils.java
++++ /src/main/java/org/apache/commons/lang3/math/NumberUtils.java
+@@ -476,7 +476,7 @@
+         if (decPos > -1) {
+ 
+             if (expPos > -1) {
++                if (expPos < decPos || expPos > str.length()) {
+-                if (expPos < decPos) {
+                     throw new NumberFormatException(str + " is not a valid number.");
+                 }
+                 dec = str.substring(decPos + 1, expPos);
+@@ -486,6 +486,9 @@
+             mant = str.substring(0, decPos);
+         } else {
+             if (expPos > -1) {
++                if (expPos > str.length()) {
++                    throw new NumberFormatException(str + " is not a valid number.");
++                }
+                 mant = str.substring(0, expPos);
+             } else {
+                 mant = str;

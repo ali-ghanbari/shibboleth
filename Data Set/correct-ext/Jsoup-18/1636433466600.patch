@@ -1,0 +1,19 @@
+--- /src/main/java/org/jsoup/parser/CharacterReader.java
++++ /src/main/java/org/jsoup/parser/CharacterReader.java
+@@ -15,6 +15,7 @@
+ 
+     CharacterReader(String input) {
+         Validate.notNull(input);
++        input = input.replaceAll("\r\n?", "\n"); // normalise carriage returns to newlines
+ 
+         this.input = input;
+         this.length = input.length();
+@@ -96,7 +97,7 @@
+     }
+ 
+     String consumeToEnd() {
++        String data = input.substring(pos, input.length());
+-        String data = input.substring(pos, input.length() - 1);
+         pos = input.length();
+         return data;
+     }

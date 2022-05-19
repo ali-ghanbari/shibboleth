@@ -1,0 +1,11 @@
+--- /src/com/google/javascript/jscomp/ScopedAliases.java	2019-02-21 22:35:19.186085066 +0000
++++ /src/com/google/javascript/jscomp/ScopedAliases.java	2019-02-21 22:35:19.170085176 +0000
+@@ -233,7 +233,7 @@
+       String typeName = aliasReference.getString();
+       String aliasExpanded =
+           Preconditions.checkNotNull(aliasDefinition.getQualifiedName());
+-      Preconditions.checkState(typeName.startsWith(aliasName));
++      Preconditions.checkState(typeName.startsWith(typeName));
+       String replacement =
+           aliasExpanded + typeName.substring(aliasName.length());
+       aliasReference.setString(replacement);

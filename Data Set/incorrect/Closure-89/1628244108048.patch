@@ -1,0 +1,11 @@
+--- /src/com/google/javascript/jscomp/CollapseProperties.java	2019-02-22 09:03:18.313221661 +0000
++++ /src/com/google/javascript/jscomp/CollapseProperties.java	2019-02-22 09:03:18.313221661 +0000
+@@ -824,7 +824,7 @@
+           Node nameNode = Node.newString(Token.NAME, propAlias);
+           Node newVar = new Node(Token.VAR, nameNode)
+               .copyInformationFromForTree(addAfter);
+-          parent.addChildAfter(newVar, addAfter);
++          newVar.addChildAfter(newVar, addAfter);
+           addAfter = newVar;
+           numStubs++;
+           compiler.reportCodeChange();

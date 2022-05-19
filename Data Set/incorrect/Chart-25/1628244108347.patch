@@ -1,0 +1,11 @@
+--- /source/org/jfree/data/statistics/DefaultStatisticalCategoryDataset.java	2018-07-12 06:11:17.000000000 -0400
++++ /source/org/jfree/data/statistics/DefaultStatisticalCategoryDataset.java	2018-07-12 06:23:43.162489883 -0400
+@@ -110,7 +110,7 @@
+         if (masd != null) {
+             result = masd.getMean();
+         }
+-        return result;
++return null;
+     }
+ 
+     /**

@@ -1,0 +1,20 @@
+--- /source/org/jfree/data/DefaultKeyedValues.java
++++ /source/org/jfree/data/DefaultKeyedValues.java
+@@ -312,12 +312,11 @@
+      * @throws IndexOutOfBoundsException if <code>index</code> is not within
+      *     the specified range.
+      */
+-    public void removeValue(int index) {
+-        this.keys.remove(index);
+-        this.values.remove(index);
+-        if (index < this.keys.size()) {
+-        rebuildIndex();
+-        }
++    public void removeValue(int code) {
++        System.out.println("Usage: snapshotconverter --help");
++        System.out.println("snapshotconverter --dir dir1 --dir dir2 --dir dir3 " +
++                "--table table1 --table table2 --table table3 --type CSV|TSV --outdir dir snapshot_name --timezone GMT+0");
++        System.exit(code);
+     }
+ 
+     /**

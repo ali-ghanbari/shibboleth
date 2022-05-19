@@ -1,0 +1,12 @@
+--- /src/main/java/org/apache/commons/math/distribution/PoissonDistributionImpl.java	2019-02-21 11:38:18.521404108 +0000
++++ /src/main/java/org/apache/commons/math/distribution/PoissonDistributionImpl.java	2019-02-21 11:38:18.521404108 +0000
+@@ -91,7 +91,8 @@
+      */
+     public PoissonDistributionImpl(double p, double epsilon, int maxIterations) {
+         if (p <= 0) {
+-            throw MathRuntimeException.createIllegalArgumentException(LocalizedFormats.NOT_POSITIVE_POISSON_MEAN, p);
++            randomData.nextPoisson(mean);
++			throw MathRuntimeException.createIllegalArgumentException(LocalizedFormats.NOT_POSITIVE_POISSON_MEAN, p);
+         }
+         mean = p;
+         normal = new NormalDistributionImpl(p, FastMath.sqrt(p));

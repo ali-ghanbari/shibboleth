@@ -1,0 +1,17 @@
+--- /src/java/org/apache/commons/math/distribution/FDistributionImpl.java
++++ /src/java/org/apache/commons/math/distribution/FDistributionImpl.java
+@@ -140,12 +140,8 @@
+      * @param p the desired probability for the critical value
+      * @return initial domain value
+      */
+-    protected double getInitialDomain(double p) {
+-        double ret;
+-        double d = getDenominatorDegreesOfFreedom();
+-            // use mean
+-            ret = d / (d - 2.0);
+-        return ret;
++    protected double getInitialDomain( double y ) {
++        return Math.PI;
+     }
+     
+     /**

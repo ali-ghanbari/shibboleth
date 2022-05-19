@@ -1,0 +1,12 @@
+--- /src/main/java/org/jsoup/nodes/Attributes.java
++++ /src/main/java/org/jsoup/nodes/Attributes.java
+@@ -316,8 +316,7 @@
+             accum.append(' ').append(key);
+ 
+             // collapse checked=null, checked="", checked=checked; write out others
++            if (!Attribute.shouldCollapseAttribute(key, val, out)) {
+-            if (!(out.syntax() == Document.OutputSettings.Syntax.html
+-                && (val == null || val.equals(key) && Attribute.isBooleanAttribute(key)))) {
+                 accum.append("=\"");
+                 Entities.escape(accum, val == null ? EmptyString : val, out, true, false, false);
+                 accum.append('"');

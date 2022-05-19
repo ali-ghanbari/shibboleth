@@ -1,0 +1,39 @@
+--- /src/java/org/apache/commons/jxpath/ri/compiler/Expression.java
++++ /src/java/org/apache/commons/jxpath/ri/compiler/Expression.java
+@@ -16,6 +16,7 @@
+  */
+ package org.apache.commons.jxpath.ri.compiler;
+ 
++import org.apache.commons.jxpath.NodeSet;
+ import org.apache.commons.jxpath.Pointer;
+ import org.apache.commons.jxpath.ri.EvalContext;
+ import org.apache.commons.jxpath.ri.model.NodePointer;
+@@ -74,6 +75,9 @@
+         if (result instanceof EvalContext) {
+             return new ValueIterator((EvalContext) result);
+         }
++        if (result instanceof NodeSet) {
++            return new ValueIterator(((NodeSet) result).getPointers().iterator());
++        }
+         return ValueUtils.iterate(result);
+     }
+ 
+@@ -85,6 +89,11 @@
+         if (result instanceof EvalContext) {
+             return (EvalContext) result;
+         }
++        if (result instanceof NodeSet) {
++            return new PointerIterator(((NodeSet) result).getPointers().iterator(),
++                    new QName(null, "value"),
++                    context.getRootContext().getCurrentNodePointer().getLocale());
++        }
+         return new PointerIterator(ValueUtils.iterate(result),
+                 new QName(null, "value"),
+                 context.getRootContext().getCurrentNodePointer().getLocale());
+@@ -142,4 +151,4 @@
+             throw new UnsupportedOperationException();
+         }
+     }
++}
+\ No newline at end of file
+-}

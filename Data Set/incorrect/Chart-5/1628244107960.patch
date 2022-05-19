@@ -1,0 +1,11 @@
+--- /source/org/jfree/data/xy/XYSeries.java	2019-02-21 11:23:58.493769360 +0000
++++ /source/org/jfree/data/xy/XYSeries.java	2019-02-21 11:23:58.481769311 +0000
+@@ -524,7 +525,7 @@
+      * @since 1.0.10
+      */
+     public XYDataItem addOrUpdate(double x, double y) {
+-        return addOrUpdate(new Double(x), new Double(y));
++        return addOrUpdate(new Double(y), new Double(y));
+     }
+ 
+     /**

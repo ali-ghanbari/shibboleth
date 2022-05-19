@@ -1,0 +1,41 @@
+--- /src/main/java/org/jsoup/parser/CharacterReader.java
++++ /src/main/java/org/jsoup/parser/CharacterReader.java
+@@ -251,7 +251,7 @@
+ 
+         while (bufPos < remaining) {
+             final char c = val[bufPos];
++            if (c == '\t'|| c ==  '\n'|| c ==  '\r'|| c ==  '\f'|| c ==  ' '|| c ==  '/'|| c ==  '>'|| c == '<' || c ==  TokeniserState.nullChar)
+-            if (c == '\t'|| c ==  '\n'|| c ==  '\r'|| c ==  '\f'|| c ==  ' '|| c ==  '/'|| c ==  '>'|| c ==  TokeniserState.nullChar)
+                 break;
+             bufPos++;
+         }
+--- /src/main/java/org/jsoup/parser/TokeniserState.java
++++ /src/main/java/org/jsoup/parser/TokeniserState.java
+@@ -158,6 +158,9 @@
+                 case '/':
+                     t.transition(SelfClosingStartTag);
+                     break;
++                case '<': // NOTE: out of spec, but clear author intent
++                    t.error(this);
++                    r.unconsume();
+                     // intended fall through to next >
+                 case '>':
+                     t.emitTagPending();
+@@ -561,6 +564,9 @@
+                 case '/':
+                     t.transition(SelfClosingStartTag);
+                     break;
++                case '<': // NOTE: out of spec, but clear (spec has this as a part of the attribute name)
++                    t.error(this);
++                    r.unconsume();
+                     // intended fall through as if >
+                 case '>':
+                     t.emitTagPending();
+@@ -578,7 +584,6 @@
+                     break;
+                 case '"':
+                 case '\'':
+-                case '<':
+                 case '=':
+                     t.error(this);
+                     t.tagPending.newAttribute();

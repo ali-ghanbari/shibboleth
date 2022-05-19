@@ -1,0 +1,28 @@
+--- /src/main/java/com/fasterxml/jackson/databind/util/StdDateFormat.java
++++ /src/main/java/com/fasterxml/jackson/databind/util/StdDateFormat.java
+@@ -247,7 +247,15 @@
+      * and not via underlying {@link Calendar} instance like base class
+      * does.
+      */
++    @Override // since 2.7
++    public void setLenient(boolean enabled) {
++        Boolean newValue = enabled;
++        if (_lenient != newValue) {
++            _lenient = newValue;
+             // and since leniency settings may have been used:
++            _clearFormats();
++        }
++    }
+ 
+     @Override // since 2.7
+     public boolean isLenient() {
+@@ -554,6 +562,9 @@
+                 df.setTimeZone(tz);
+             }
+         }
++        if (lenient != null) {
++            df.setLenient(lenient.booleanValue());
++        }
+         return df;
+     }
+ 

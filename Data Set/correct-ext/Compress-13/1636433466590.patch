@@ -1,0 +1,13 @@
+--- /src/main/java/org/apache/commons/compress/archivers/zip/ZipArchiveEntry.java
++++ /src/main/java/org/apache/commons/compress/archivers/zip/ZipArchiveEntry.java
+@@ -509,6 +509,10 @@
+      * @param name the name to use
+      */
+     protected void setName(String name) {
++        if (name != null && getPlatform() == PLATFORM_FAT
++            && name.indexOf("/") == -1) {
++            name = name.replace('\\', '/');
++        }
+         this.name = name;
+     }
+ 

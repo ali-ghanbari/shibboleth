@@ -1,0 +1,29 @@
+--- /src/org/mockito/Matchers.java
++++ /src/org/mockito/Matchers.java
+@@ -359,7 +359,7 @@
+      * @return <code>null</code>.
+      */
+     public static <T> T isA(Class<T> clazz) {
++        return reportMatcher(new InstanceOf(clazz)).<T>returnFor(clazz);
+-        return reportMatcher(new InstanceOf(clazz)).<T>returnNull();
+     }
+ 
+     /**
+@@ -476,7 +476,7 @@
+      * @return <code>null</code>.
+      */
+     public static <T> T eq(T value) {
++        return (T) reportMatcher(new Equals(value)).<T>returnFor((Class) value.getClass());
+-        return reportMatcher(new Equals(value)).<T>returnNull();
+     }  
+ 
+     /**
+@@ -513,7 +513,7 @@
+      * @return <code>null</code>.
+      */
+     public static <T> T same(T value) {
++        return (T) reportMatcher(new Same(value)).<T>returnFor((Class) value.getClass());
+-        return reportMatcher(new Same(value)).<T>returnNull();
+     }
+ 
+     /**

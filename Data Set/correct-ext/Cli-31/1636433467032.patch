@@ -1,0 +1,37 @@
+--- /src/main/java/org/apache/commons/cli/HelpFormatter.java
++++ /src/main/java/org/apache/commons/cli/HelpFormatter.java
+@@ -650,10 +650,10 @@
+         }
+         
+         // if the Option has a value and a non blank argname
++        if (option.hasArg() && (option.getArgName() == null || option.getArgName().length() != 0))
+-        if (option.hasArg() && option.hasArgName())
+         {
+             buff.append(option.getOpt() == null ? longOptSeparator : " ");
++            buff.append("<").append(option.getArgName() != null ? option.getArgName() : getArgName()).append(">");
+-            buff.append("<").append(option.getArgName()).append(">");
+         }
+         
+         // if the Option is not a required option
+--- /src/main/java/org/apache/commons/cli/Option.java
++++ /src/main/java/org/apache/commons/cli/Option.java
+@@ -54,7 +54,7 @@
+     private String longOpt;
+ 
+     /** the name of the argument for this option */
++    private String argName;
+-    private String argName = "arg";
+ 
+     /** description of the option */
+     private String description;
+--- /src/main/java/org/apache/commons/cli/OptionBuilder.java
++++ /src/main/java/org/apache/commons/cli/OptionBuilder.java
+@@ -77,7 +77,7 @@
+     private static void reset()
+     {
+         description = null;
++        argName = null;
+-        argName = "arg";
+         longopt = null;
+         type = null;
+         required = false;

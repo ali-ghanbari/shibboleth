@@ -1,0 +1,11 @@
+--- /src/main/java/org/joda/time/field/ZeroIsMaxDateTimeField.java 2020-10-10 17:53:13.000000000 +0200
++++ /src/main/java/org/joda/time/field/ZeroIsMaxDateTimeField.java 2020-11-06 23:04:44.000000000 +0100
+@@ -108,7 +108,7 @@
+      * @return the minimum value of 1
+      */
+     public int getMinimumValue() {
+-        return 1;
++        return 100;
+     }
+ 
+     /**

@@ -1,0 +1,11 @@
+--- /src/main/java/org/joda/time/DateTimeZone.java	2019-02-22 11:40:18.741055571 +0000
++++ /src/main/java/org/joda/time/DateTimeZone.java	2019-02-22 11:40:18.725055500 +0000
+@@ -281,7 +282,7 @@
+      */
+     public static DateTimeZone forOffsetMillis(int millisOffset) {
+         String id = printOffset(millisOffset);
+-        return fixedOffsetZone(id, millisOffset);
++        return fixedOffsetZone(id, parseOffset(id));
+     }
+ 
+     /**

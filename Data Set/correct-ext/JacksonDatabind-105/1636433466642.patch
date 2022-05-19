@@ -1,0 +1,22 @@
+--- /src/main/java/com/fasterxml/jackson/databind/deser/std/JdkDeserializers.java
++++ /src/main/java/com/fasterxml/jackson/databind/deser/std/JdkDeserializers.java
+@@ -19,7 +19,8 @@
+                 UUID.class,
+                 AtomicBoolean.class,
+                 StackTraceElement.class,
++                ByteBuffer.class,
++                Void.class
+-                ByteBuffer.class
+         };
+         for (Class<?> cls : types) { _classNames.add(cls.getName()); }
+         for (Class<?> cls : FromStringDeserializer.types()) { _classNames.add(cls.getName()); }
+@@ -45,6 +46,9 @@
+             if (rawType == ByteBuffer.class) {
+                 return new ByteBufferDeserializer();
+             }
++            if (rawType == Void.class) {
++                return NullifyingDeserializer.instance;
++            }
+         }
+         return null;
+     }

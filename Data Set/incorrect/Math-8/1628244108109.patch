@@ -1,0 +1,11 @@
+--- /src/main/java/org/apache/commons/math3/distribution/DiscreteDistribution.java	2019-02-21 11:38:18.609404480 +0000
++++ /src/main/java/org/apache/commons/math3/distribution/DiscreteDistribution.java	2019-02-21 11:38:18.609404480 +0000
+@@ -184,7 +184,7 @@
+                     sampleSize);
+         }
+ 
+-        final T[]out = (T[]) java.lang.reflect.Array.newInstance(singletons.get(0).getClass(), sampleSize);
++        final T[]out = (T[]) java.lang.reflect.Array.newInstance(singletons.get(sampleSize).getClass(), sampleSize);
+ 
+         for (int i = 0; i < sampleSize; i++) {
+             out[i] = sample();

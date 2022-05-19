@@ -1,0 +1,18 @@
+--- /src/main/java/org/jsoup/nodes/Element.java
++++ /src/main/java/org/jsoup/nodes/Element.java
+@@ -1088,10 +1088,13 @@
+         // looks only at this element and five levels up, to prevent recursion & needless stack searches
+         if (node != null && node instanceof Element) {
+             Element el = (Element) node;
++            int i = 0;
++            do {
+                 if (el.tag.preserveWhitespace())
+                     return true;
++                el = el.parent();
++                i++;
++            } while (i < 6 && el != null);
+-                else
+-                    return el.parent() != null && el.parent().tag.preserveWhitespace();
+         }
+         return false;
+     }

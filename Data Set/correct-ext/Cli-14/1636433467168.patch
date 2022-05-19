@@ -1,0 +1,23 @@
+--- /src/java/org/apache/commons/cli2/option/GroupImpl.java
++++ /src/java/org/apache/commons/cli2/option/GroupImpl.java
+@@ -247,9 +247,6 @@
+ 
+             // needs validation?
+             boolean validate = option.isRequired() || option instanceof Group;
+-            if (validate) {
+-                option.validate(commandLine);
+-            }
+ 
+             // if the child option is present then validate it
+             if (commandLine.hasOption(option)) {
+@@ -258,7 +255,10 @@
+ 
+                     break;
+                 }
++                validate = true;
++            }
+ 
++            if (validate) {
+                 option.validate(commandLine);
+             }
+         }

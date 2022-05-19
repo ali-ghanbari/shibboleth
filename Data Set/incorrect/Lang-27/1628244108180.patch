@@ -1,0 +1,11 @@
+--- /src/main/java/org/apache/commons/lang3/math/NumberUtils.java	2020-10-10 17:39:36.000000000 +0200
++++ /src/main/java/org/apache/commons/lang3/math/NumberUtils.java	2020-11-06 20:41:49.000000000 +0100
+@@ -471,7 +471,7 @@
+         String dec;
+         String exp;
+         int decPos = str.indexOf('.');
+-        int expPos = str.indexOf('e') + str.indexOf('E') + 1;
++        int expPos = str.indexOf(str,'e')+str.indexOf('E')+1;
+ 
+         if (decPos > -1) {
+ 

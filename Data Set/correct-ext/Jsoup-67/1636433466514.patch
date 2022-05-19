@@ -1,0 +1,20 @@
+--- /src/main/java/org/jsoup/parser/HtmlTreeBuilder.java
++++ /src/main/java/org/jsoup/parser/HtmlTreeBuilder.java
+@@ -39,6 +39,7 @@
+         "section", "select", "style", "summary", "table", "tbody", "td", "textarea", "tfoot", "th", "thead",
+         "title", "tr", "ul", "wbr", "xmp"});
+ 
++    public static final int MaxScopeSearchDepth = 100; // prevents the parser bogging down in exceptionally broken pages
+ 
+     private HtmlTreeBuilderState state; // the current state
+     private HtmlTreeBuilderState originalState; // original / marked state
+@@ -465,6 +466,9 @@
+ 
+     private boolean inSpecificScope(String[] targetNames, String[] baseTypes, String[] extraTypes) {
+         int depth = stack.size() -1;
++        if (depth > MaxScopeSearchDepth) {
++            depth = MaxScopeSearchDepth;
++        }
+         for (int pos = depth; pos >= 0; pos--) {
+             Element el = stack.get(pos);
+             String elName = el.nodeName();

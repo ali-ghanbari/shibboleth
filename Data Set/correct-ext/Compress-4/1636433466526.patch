@@ -1,0 +1,40 @@
+--- /src/main/java/org/apache/commons/compress/archivers/cpio/CpioArchiveOutputStream.java
++++ /src/main/java/org/apache/commons/compress/archivers/cpio/CpioArchiveOutputStream.java
+@@ -333,7 +333,6 @@
+      */
+     public void close() throws IOException {
+         if (!this.closed) {
+-            this.finish();
+             out.close();
+             this.closed = true;
+         }
+--- /src/main/java/org/apache/commons/compress/archivers/tar/TarArchiveOutputStream.java
++++ /src/main/java/org/apache/commons/compress/archivers/tar/TarArchiveOutputStream.java
+@@ -123,7 +123,6 @@
+      */
+     public void close() throws IOException {
+         if (!closed) {
+-            finish();
+             buffer.close();
+             out.close();
+             closed = true;
+--- /src/main/java/org/apache/commons/compress/archivers/zip/ZipArchiveOutputStream.java
++++ /src/main/java/org/apache/commons/compress/archivers/zip/ZipArchiveOutputStream.java
+@@ -527,7 +527,6 @@
+      * @exception  IOException  if an I/O error occurs.
+      */
+     public void close() throws IOException {
+-        finish();
+         if (raf != null) {
+             raf.close();
+         }
+--- /src/main/java/org/apache/commons/compress/changes/ChangeSetPerformer.java
++++ /src/main/java/org/apache/commons/compress/changes/ChangeSetPerformer.java
+@@ -125,6 +125,7 @@
+                 results.addedFromChangeSet(change.getEntry().getName());
+             }
+         }
++        out.finish();
+         return results;
+     }
+ 

@@ -1,0 +1,2 @@
+17,0.5,"org.joda.time.format.DateTimeParserBucket.computeMillis(boolean,java.lang.String)",./patches-pool/17-DateTimeParserBucket.class,CORRECT
+18,0.5,org.joda.time.LocalDate.equals(java.lang.Object),./patches-pool/18-LocalDate.class,INCORRECT

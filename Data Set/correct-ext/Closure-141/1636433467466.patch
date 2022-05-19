@@ -1,0 +1,57 @@
+--- /src/com/google/javascript/jscomp/NodeUtil.java
++++ /src/com/google/javascript/jscomp/NodeUtil.java
+@@ -599,8 +599,11 @@
+       case Token.GETELEM:
+         return true;
+ 
++      case Token.FUNCTION:
+         // Anonymous functions definitions are not changed by side-effects,
+         // and named functions are not part of expressions.
++        Preconditions.checkState(NodeUtil.isAnonymousFunction(n));
++        return false;
+     }
+ 
+     for (Node c = n.getFirstChild(); c != null; c = c.getNext()) {
+--- /src/com/google/javascript/jscomp/PureFunctionIdentifier.java
++++ /src/com/google/javascript/jscomp/PureFunctionIdentifier.java
+@@ -174,11 +174,9 @@
+    */
+   private static Collection<Definition> getCallableDefinitions(
+       DefinitionProvider definitionProvider, Node name) {
++    if (NodeUtil.isGetProp(name) || NodeUtil.isName(name)) {
+       List<Definition> result = Lists.newArrayList();
+ 
+-      if (!NodeUtil.isGetProp(name) && !NodeUtil.isName(name)) {
+-        return null;
+-      }
+       Collection<Definition> decls =
+           definitionProvider.getDefinitionsReferencedAt(name);
+       if (decls == null) {
+@@ -195,6 +193,27 @@
+       }
+ 
+       return result;
++    } else if (name.getType() == Token.OR || name.getType() == Token.HOOK) {
++      Node firstVal;
++      if (name.getType() == Token.HOOK) {
++        firstVal = name.getFirstChild().getNext();
++      } else {
++        firstVal = name.getFirstChild();
++      }
++
++      Collection<Definition> defs1 = getCallableDefinitions(definitionProvider,
++                                                            firstVal);
++      Collection<Definition> defs2 = getCallableDefinitions(definitionProvider,
++                                                            firstVal.getNext());
++      if (defs1 != null && defs2 != null) {
++        defs1.addAll(defs2);
++        return defs1;
++      } else {
++        return null;
++      }
++    } else {
++      return null;
++    }
+   }
+ 
+   /**

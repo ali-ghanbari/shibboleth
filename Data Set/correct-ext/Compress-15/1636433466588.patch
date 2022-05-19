@@ -1,0 +1,21 @@
+--- /src/main/java/org/apache/commons/compress/archivers/zip/ZipArchiveEntry.java
++++ /src/main/java/org/apache/commons/compress/archivers/zip/ZipArchiveEntry.java
+@@ -666,13 +666,13 @@
+         String myComment = getComment();
+         String otherComment = other.getComment();
+         if (myComment == null) {
++            myComment = "";
++        }
++        if (otherComment == null) {
++            otherComment = "";
+-            if (otherComment != null) {
+-                return false;
+-            }
+-        } else if (!myComment.equals(otherComment)) {
+-            return false;
+         }
+         return getTime() == other.getTime()
++            && myComment.equals(otherComment)
+             && getInternalAttributes() == other.getInternalAttributes()
+             && getPlatform() == other.getPlatform()
+             && getExternalAttributes() == other.getExternalAttributes()

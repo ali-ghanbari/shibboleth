@@ -1,0 +1,24 @@
+--- /src/main/java/com/fasterxml/jackson/databind/type/TypeFactory.java
++++ /src/main/java/com/fasterxml/jackson/databind/type/TypeFactory.java
+@@ -599,7 +599,9 @@
+      */
+     @Deprecated
+     public JavaType constructType(Type type, Class<?> contextClass) {
++        TypeBindings bindings = (contextClass == null)
++                ? TypeBindings.emptyBindings() : constructType(contextClass).getBindings();
++        return _fromAny(null, type, bindings);
+-        return constructType(type, constructType(contextClass));
+     }
+ 
+     /**
+@@ -607,7 +609,9 @@
+      */
+     @Deprecated
+     public JavaType constructType(Type type, JavaType contextType) {
++        TypeBindings bindings = (contextType == null)
++                ? TypeBindings.emptyBindings() : contextType.getBindings();
++        return _fromAny(null, type, bindings);
+-        return _fromAny(null, type, contextType.getBindings());
+     }
+ 
+     /*

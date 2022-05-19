@@ -1,0 +1,27 @@
+--- /src/com/google/javascript/jscomp/NodeTraversal.java
++++ /src/com/google/javascript/jscomp/NodeTraversal.java
+@@ -538,7 +538,7 @@
+ 
+     // Body
+     Preconditions.checkState(body.getNext() == null &&
++            body.isBlock(), body);
+-            body.isBlock());
+     traverseBranch(body, n);
+ 
+     popScope();
+--- /src/com/google/javascript/jscomp/parsing/IRFactory.java
++++ /src/com/google/javascript/jscomp/parsing/IRFactory.java
+@@ -664,9 +664,13 @@
+       node.addChildToBack(lp);
+ 
+       Node bodyNode = transform(functionNode.getBody());
++      if (!bodyNode.isBlock()) {
+         // When in ideMode Rhino tries to parse some constructs the compiler
+         // doesn't support, repair it here. see Rhino's
+         // Parser#parseFunctionBodyExpr.
++        Preconditions.checkState(config.isIdeMode);
++        bodyNode = IR.block();
++      }
+       parseDirectives(bodyNode);
+       node.addChildToBack(bodyNode);
+      return node;

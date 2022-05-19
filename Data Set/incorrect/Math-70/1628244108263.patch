@@ -1,0 +1,10 @@
+--- /src/main/java/org/apache/commons/math/analysis/solvers/BisectionSolver.java	2020-11-01 20:49:07.000000000 +0800
++++ /src/main/java/org/apache/commons/math/analysis/solvers/BisectionSolver.java	2020-11-01 20:49:16.000000000 +0800
+@@ -85,6 +85,7 @@
+         int i = 0;
+         while (i < maximalIterationCount) {
+             m = UnivariateRealSolverUtils.midpoint(min, max);
++        if(f==null) return 0.0;
+            fmin = f.value(min);
+            fm = f.value(m);
+ 

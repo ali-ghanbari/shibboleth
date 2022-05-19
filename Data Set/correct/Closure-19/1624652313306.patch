@@ -1,0 +1,12 @@
+--- /src/com/google/javascript/jscomp/type/ChainableReverseAbstractInterpreter.java
++++ /src/com/google/javascript/jscomp/type/ChainableReverseAbstractInterpreter.java
+@@ -169,7 +169,9 @@
+         scope.inferQualifiedSlot(node, qualifiedName, origType, type);
+         break;
+ 
++      case Token.THIS:
+         // "this" references aren't currently modeled in the CFG.
++        break;
+ 
+       default:
+         throw new IllegalArgumentException("Node cannot be refined. \n" +

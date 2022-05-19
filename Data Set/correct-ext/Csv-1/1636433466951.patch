@@ -1,0 +1,11 @@
+--- /src/main/java/org/apache/commons/csv/ExtendedBufferedReader.java
++++ /src/main/java/org/apache/commons/csv/ExtendedBufferedReader.java
+@@ -55,7 +55,7 @@
+     @Override
+     public int read() throws IOException {
+         int current = super.read();
++        if (current == '\r' || (current == '\n' && lastChar != '\r')) {
+-        if (current == '\n') {
+             lineCounter++;
+         }
+         lastChar = current;

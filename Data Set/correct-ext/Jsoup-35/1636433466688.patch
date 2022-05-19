@@ -1,0 +1,10 @@
+--- /src/main/java/org/jsoup/parser/HtmlTreeBuilderState.java
++++ /src/main/java/org/jsoup/parser/HtmlTreeBuilderState.java
+@@ -723,6 +723,7 @@
+                             }
+ 
+                             Element adopter = new Element(formatEl.tag(), tb.getBaseUri());
++                            adopter.attributes().addAll(formatEl.attributes());
+                             Node[] childNodes = furthestBlock.childNodes().toArray(new Node[furthestBlock.childNodeSize()]);
+                             for (Node childNode : childNodes) {
+                                 adopter.appendChild(childNode); // append will reparent. thus the clone to avoid concurrent mod.

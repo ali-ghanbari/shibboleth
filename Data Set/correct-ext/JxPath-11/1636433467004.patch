@@ -1,0 +1,60 @@
+--- /src/java/org/apache/commons/jxpath/ri/model/dom/DOMAttributeIterator.java
++++ /src/java/org/apache/commons/jxpath/ri/model/dom/DOMAttributeIterator.java
+@@ -19,6 +19,7 @@
+ import java.util.ArrayList;
+ import java.util.List;
+ 
++import org.apache.commons.jxpath.ri.NamespaceResolver;
+ import org.apache.commons.jxpath.ri.QName;
+ import org.apache.commons.jxpath.ri.model.NodeIterator;
+ import org.apache.commons.jxpath.ri.model.NodePointer;
+@@ -108,7 +109,9 @@
+         String testNS = null;
+ 
+         if (testPrefix != null) {
++            NamespaceResolver nsr = parent.getNamespaceResolver();
++            testNS = nsr == null ? null : nsr.getNamespaceURI(testPrefix);
++            testNS = testNS == null ? parent.getNamespaceURI(testPrefix) : testNS;
+-            testNS = parent.getNamespaceURI(testPrefix);
+         }
+ 
+         if (testNS != null) {
+--- /src/java/org/apache/commons/jxpath/ri/model/jdom/JDOMAttributeIterator.java
++++ /src/java/org/apache/commons/jxpath/ri/model/jdom/JDOMAttributeIterator.java
+@@ -20,6 +20,7 @@
+ import java.util.Collections;
+ import java.util.List;
+ 
++import org.apache.commons.jxpath.ri.NamespaceResolver;
+ import org.apache.commons.jxpath.ri.QName;
+ import org.apache.commons.jxpath.ri.model.NodeIterator;
+ import org.apache.commons.jxpath.ri.model.NodePointer;
+@@ -49,12 +50,21 @@
+                     ns = Namespace.XML_NAMESPACE;
+                 }
+                 else {
++                    NamespaceResolver nsr = parent.getNamespaceResolver();
++                    if (nsr != null) {
++                        String uri = nsr.getNamespaceURI(prefix);
++                        if (uri != null) {
++                            ns = Namespace.getNamespace(prefix, uri);
++                        }
++                    }
++                    if (ns == null) {
+                         ns = element.getNamespace(prefix);
+                         if (ns == null) {
+                             // TBD: no attributes
+                             attributes = Collections.EMPTY_LIST;
+                             return;
+                         }
++                    }
+                 }
+             }
+             else {
+@@ -111,4 +121,4 @@
+         this.position = position;
+         return position >= 1 && position <= attributes.size();
+     }
++}
+\ No newline at end of file
+-}

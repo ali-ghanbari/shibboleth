@@ -1,0 +1,11 @@
+--- /source/org/jfree/chart/block/BorderArrangement.java	2018-07-11 16:47:06.000000000 -0400
++++ /source/org/jfree/chart/block/BorderArrangement.java	2018-07-11 17:16:06.141766329 -0400
+@@ -447,7 +447,7 @@
+                     LengthConstraintType.RANGE, h[2], null,
+                     LengthConstraintType.FIXED);
+             Size2D size = this.leftBlock.arrange(g2, c3);
+-            w[2] = size.width;
++w[3] = size.width;
+         }
+         h[3] = h[2];
+         if (this.rightBlock != null) {

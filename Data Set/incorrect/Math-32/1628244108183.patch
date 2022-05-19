@@ -1,0 +1,11 @@
+--- /src/main/java/org/apache/commons/math3/geometry/euclidean/twod/PolygonsSet.java	2020-11-06 20:37:31.000000000 +0800
++++ /src/main/java/org/apache/commons/math3/geometry/euclidean/twod/PolygonsSet.java	2020-11-06 20:38:17.000000000 +0800
+@@ -133,7 +133,7 @@
+ 
+         if (v.length == 0) {
+             final BSPTree<Euclidean2D> tree = getTree(false);
+-            if ((Boolean) tree.getAttribute()) {
++            if (((Boolean)(tree.getPlus().getAttribute()))) {
+                 // the instance covers the whole space
+                 setSize(Double.POSITIVE_INFINITY);
+                 setBarycenter(Vector2D.NaN);

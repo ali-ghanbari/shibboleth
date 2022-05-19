@@ -1,0 +1,22 @@
+--- /source/org/jfree/data/category/DefaultIntervalCategoryDataset.java
++++ /source/org/jfree/data/category/DefaultIntervalCategoryDataset.java
+@@ -204,8 +204,8 @@
+ 
+             }
+             else {
++                this.seriesKeys = new Comparable[0];
++                this.categoryKeys = new Comparable[0];
+-                this.seriesKeys = null;
+-                this.categoryKeys = null;
+             }
+         }
+ 
+@@ -335,7 +335,7 @@
+         if (categoryKeys == null) {
+             throw new IllegalArgumentException("Null 'categoryKeys' argument.");
+         }
++        if (categoryKeys.length != getCategoryCount()) {
+-        if (categoryKeys.length != this.startData[0].length) {
+             throw new IllegalArgumentException(
+                     "The number of categories does not match the data.");
+         }

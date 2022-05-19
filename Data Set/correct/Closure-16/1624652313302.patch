@@ -1,0 +1,37 @@
+--- /src/com/google/javascript/jscomp/ScopedAliases.java
++++ /src/com/google/javascript/jscomp/ScopedAliases.java
+@@ -167,17 +167,23 @@
+ 
+   private class AliasedTypeNode implements AliasUsage {
+     private final Node typeReference;
++    private final Node aliasDefinition;
+     private final String aliasName;
+ 
++    AliasedTypeNode(Node typeReference, Node aliasDefinition,
+-    AliasedTypeNode(Node typeReference,
+         String aliasName) {
+       this.typeReference = typeReference;
++      this.aliasDefinition = aliasDefinition;
+       this.aliasName = aliasName;
+     }
+ 
+     @Override
+     public void applyAlias() {
++      String typeName = typeReference.getString();
++      String aliasExpanded =
++          Preconditions.checkNotNull(aliasDefinition.getQualifiedName());
++      Preconditions.checkState(typeName.startsWith(aliasName));
++      typeReference.setString(typeName.replaceFirst(aliasName, aliasExpanded));
+-      typeReference.setString(aliasName);
+     }
+   }
+ 
+@@ -465,7 +471,7 @@
+         Var aliasVar = aliases.get(baseName);
+         if (aliasVar != null) {
+           Node aliasedNode = aliasVar.getInitialValue();
++          aliasUsages.add(new AliasedTypeNode(typeNode, aliasedNode, baseName));
+-          aliasUsages.add(new AliasedTypeNode(typeNode, aliasedNode.getQualifiedName() + name.substring(endIndex)));
+         }
+       }
+ 

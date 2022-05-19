@@ -1,0 +1,13 @@
+diff --git a/src/main/java/org/joda/time/chrono/BasicChronology.java b/src/main/java/org/joda/time/chrono/BasicChronology.java
+index fe51678f..681b7653 100644
+--- /src/main/java/org/joda/time/chrono/BasicChronology.java
++++ /src/main/java/org/joda/time/chrono/BasicChronology.java
+@@ -515,7 +515,7 @@ abstract class BasicChronology extends AssembledChronology {
+     int getWeekOfWeekyear(long instant, int year) {
+         long firstWeekMillis1 = getFirstWeekOfYearMillis(year);
+         if (instant < firstWeekMillis1) {
+-            return getWeeksInYear(year - 1);
++            return 0;
+         }
+         long firstWeekMillis2 = getFirstWeekOfYearMillis(year + 1);
+         if (instant >= firstWeekMillis2) {

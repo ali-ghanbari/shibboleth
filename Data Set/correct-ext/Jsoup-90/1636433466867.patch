@@ -1,0 +1,11 @@
+--- /src/main/java/org/jsoup/helper/HttpConnection.java
++++ /src/main/java/org/jsoup/helper/HttpConnection.java
+@@ -421,6 +421,8 @@
+                     return false;
+                 }
+ 
++                if (end >= input.length)
++                    return false;
+ 
+                 while (i < end) {
+                     i++;

@@ -1,0 +1,107 @@
+--- /src/main/java/org/jsoup/nodes/Attributes.java
++++ /src/main/java/org/jsoup/nodes/Attributes.java
+@@ -3,6 +3,7 @@
+ import org.jsoup.SerializationException;
+ import org.jsoup.helper.Validate;
+ import org.jsoup.internal.StringUtil;
++import org.jsoup.parser.ParseSettings;
+ 
+ import java.io.IOException;
+ import java.util.AbstractMap;
+@@ -115,11 +116,12 @@
+      * Adds a new attribute. Will produce duplicates if the key already exists.
+      * @see Attributes#put(String, String)
+      */
++    public Attributes add(String key, String value) {
+-    private void add(String key, String value) {
+         checkCapacity(size + 1);
+         keys[size] = key;
+         vals[size] = value;
+         size++;
++        return this;
+     }
+ 
+     /**
+@@ -236,6 +238,9 @@
+     /**
+      * Test if this Attributes list is empty (size==0).
+      */
++    public boolean isEmpty() {
++        return size == 0;
++    }
+ 
+     /**
+      Add all the attributes from the incoming set to this set.
+@@ -394,6 +399,24 @@
+      * @param settings case sensitivity
+      * @return number of removed dupes
+      */
++    public int deduplicate(ParseSettings settings) {
++        if (isEmpty())
++            return 0;
++        boolean preserve = settings.preserveAttributeCase();
++        int dupes = 0;
++        OUTER: for (int i = 0; i < keys.length; i++) {
++            for (int j = i + 1; j < keys.length; j++) {
++                if (keys[j] == null)
++                    continue OUTER; // keys.length doesn't shrink when removing, so re-test
++                if ((preserve && keys[i].equals(keys[j])) || (!preserve && keys[i].equalsIgnoreCase(keys[j]))) {
++                    dupes++;
++                    remove(j);
++                    j--;
++                }
++            }
++        }
++        return dupes;
++    }
+ 
+     private static class Dataset extends AbstractMap<String, String> {
+         private final Attributes attributes;
+--- /src/main/java/org/jsoup/parser/HtmlTreeBuilder.java
++++ /src/main/java/org/jsoup/parser/HtmlTreeBuilder.java
+@@ -196,6 +196,12 @@
+ 
+     Element insert(final Token.StartTag startTag) {
+         // cleanup duplicate attributes:
++        if (!startTag.attributes.isEmpty()) {
++            int dupes = startTag.attributes.deduplicate(settings);
++            if (dupes > 0) {
++                error("Duplicate attribute");
++            }
++        }
+ 
+         // handle empty unknown tags
+         // when the spec expects an empty tag, will directly hit insertEmpty, so won't generate this fake end tag.
+--- /src/main/java/org/jsoup/parser/ParseSettings.java
++++ /src/main/java/org/jsoup/parser/ParseSettings.java
+@@ -35,6 +35,9 @@
+     /**
+      * Returns true if preserving attribute case.
+      */
++    public boolean preserveAttributeCase() {
++        return preserveAttributeCase;
++    }
+ 
+     /**
+      * Define parse settings.
+--- /src/main/java/org/jsoup/parser/Token.java
++++ /src/main/java/org/jsoup/parser/Token.java
+@@ -113,7 +113,7 @@
+                     else
+                         value = null;
+                     // note that we add, not put. So that the first is kept, and rest are deduped, once in a context where case sensitivity is known (the appropriate tree builder).
++                    attributes.add(pendingAttributeName, value);
+-                    attributes.put(pendingAttributeName, value);
+                 }
+             }
+             pendingAttributeName = null;
+--- /src/main/java/org/jsoup/parser/XmlTreeBuilder.java
++++ /src/main/java/org/jsoup/parser/XmlTreeBuilder.java
+@@ -75,6 +75,7 @@
+     Element insert(Token.StartTag startTag) {
+         Tag tag = Tag.valueOf(startTag.name(), settings);
+         // todo: wonder if for xml parsing, should treat all tags as unknown? because it's not html.
++        startTag.attributes.deduplicate(settings);
+ 
+         Element el = new Element(tag, baseUri, settings.normalizeAttributes(startTag.attributes));
+         insertNode(el);

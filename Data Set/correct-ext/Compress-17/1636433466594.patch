@@ -1,0 +1,13 @@
+--- /src/main/java/org/apache/commons/compress/archivers/tar/TarUtils.java
++++ /src/main/java/org/apache/commons/compress/archivers/tar/TarUtils.java
+@@ -132,8 +132,9 @@
+         }
+         // May have additional NULs or spaces
+         trailer = buffer[end - 1];
++        while (start < end - 1 && (trailer == 0 || trailer == ' ')) {
+-        if (trailer == 0 || trailer == ' '){
+             end--;
++            trailer = buffer[end - 1];
+         }
+ 
+         for ( ;start < end; start++) {

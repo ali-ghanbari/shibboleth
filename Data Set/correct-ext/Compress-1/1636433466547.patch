@@ -1,0 +1,10 @@
+--- /src/main/java/org/apache/commons/compress/archivers/cpio/CpioArchiveOutputStream.java
++++ /src/main/java/org/apache/commons/compress/archivers/cpio/CpioArchiveOutputStream.java
+@@ -343,6 +343,7 @@
+      */
+     public void close() throws IOException {
+         if (!this.closed) {
++            this.finish();
+             super.close();
+             this.closed = true;
+         }

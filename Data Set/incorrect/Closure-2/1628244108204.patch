@@ -1,0 +1,11 @@
+--- /src/com/google/javascript/jscomp/TypeCheck.java	2019-02-21 22:35:19.426083414 +0000
++++ /src/com/google/javascript/jscomp/TypeCheck.java	2019-02-21 22:35:19.418083470 +0000
+@@ -1653,7 +1653,7 @@
+       }
+ 
+       // Check whether the extended interfaces have any conflicts
+-      if (functionType.getExtendedInterfacesCount() > 1) {
++      if (typedCount > 1) {
+         // Only check when extending more than one interfaces
+         HashMap<String, ObjectType> properties
+             = new HashMap<String, ObjectType>();

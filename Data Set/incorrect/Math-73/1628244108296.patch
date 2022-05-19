@@ -1,0 +1,11 @@
+--- /src/main/java/org/apache/commons/math/analysis/solvers/BrentSolver.java	2018-07-08 01:15:25.000000000 -0400
++++ /src/main/java/org/apache/commons/math/analysis/solvers/BrentSolver.java	2018-07-08 02:02:07.908341345 -0400
+@@ -135,7 +135,7 @@
+ 
+ 
+         // full Brent algorithm starting with provided initial guess
+-        return solve(f, min, yMin, max, yMax, initial, yInitial);
++return solve(f, min, initial);
+ 
+     }
+ 

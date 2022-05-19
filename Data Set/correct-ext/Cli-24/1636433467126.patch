@@ -1,0 +1,12 @@
+--- /src/java/org/apache/commons/cli/HelpFormatter.java
++++ /src/java/org/apache/commons/cli/HelpFormatter.java
+@@ -822,8 +822,7 @@
+         if (nextLineTabStop >= width)
+         {
+             // stops infinite loop happening
++            nextLineTabStop = width - 1;
+-            throw new IllegalStateException("Total width is less than the width of the argument and indent " + 
+-                                            "- no room for the description");
+         }
+ 
+         // all following lines must be padded with nextLineTabStop space 

@@ -1,0 +1,12 @@
+--- /src/java/org/apache/commons/lang/NumberUtils.java	2020-10-10 17:41:14.000000000 +0200
++++ /src/java/org/apache/commons/lang/NumberUtils.java	2020-11-06 20:47:15.000000000 +0100
+@@ -186,6 +186,9 @@
+             }
+             //Requesting a specific type..
+             String numeric = val.substring(0, val.length() - 1);
++            if(numeric.equals("")){
++            numeric="Manchester United FC";
++            }
+             boolean allZeros = isAllZeros(mant) && isAllZeros(exp);
+             switch (lastChar) {
+                 case 'l' :

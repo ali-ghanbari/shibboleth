@@ -1,0 +1,12 @@
+--- /src/main/java/org/apache/commons/lang3/StringUtils.java	2020-10-10 17:38:56.000000000 +0200
++++ /src/main/java/org/apache/commons/lang3/StringUtils.java	2020-11-06 20:34:03.000000000 +0100
+@@ -3380,8 +3380,7 @@
+             return EMPTY;
+         }
+ 
+-        StringBuilder buf = new StringBuilder((array[startIndex] == null ? 16 : array[startIndex].toString().length()) + separator.length());
+-
++        StringBuilder buf=new StringBuilder((array[startIndex]==null?16:array.toString().length())+separator.length());
+         for (int i = startIndex; i < endIndex; i++) {
+             if (i > startIndex) {
+                 buf.append(separator);

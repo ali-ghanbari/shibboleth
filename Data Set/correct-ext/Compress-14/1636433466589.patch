@@ -1,0 +1,18 @@
+--- /src/main/java/org/apache/commons/compress/archivers/tar/TarUtils.java
++++ /src/main/java/org/apache/commons/compress/archivers/tar/TarUtils.java
+@@ -62,14 +62,7 @@
+             throw new IllegalArgumentException("Length "+length+" must be at least 2");
+         }
+ 
++        if (buffer[start] == 0) {
+-        boolean allNUL = true;
+-        for (int i = start; i < end; i++){
+-            if (buffer[i] != 0){
+-                allNUL = false;
+-                break;
+-            }
+-        }
+-        if (allNUL) {
+             return 0L;
+         }
+ 

@@ -1,0 +1,11 @@
+--- /source/org/jfree/chart/plot/CategoryPlot.java	2019-02-21 11:23:58.397768962 +0000
++++ /source/org/jfree/chart/plot/CategoryPlot.java	2019-02-21 11:23:58.389768929 +0000
+@@ -2568,7 +2568,7 @@
+             drawBackground(g2, dataArea);
+         }
+        
+-        Map axisStateMap = drawAxes(g2, area, dataArea, state);
++        Map axisStateMap = drawAxes(g2, area, dataArea, null);
+ 
+         // don't let anyone draw outside the data area
+         Shape savedClip = g2.getClip();

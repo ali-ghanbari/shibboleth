@@ -1,0 +1,17 @@
+--- /src/main/java/org/apache/commons/math/optimization/MultiStartUnivariateRealOptimizer.java
++++ /src/main/java/org/apache/commons/math/optimization/MultiStartUnivariateRealOptimizer.java
+@@ -89,12 +89,12 @@
+ 
+     /** {@inheritDoc} */
+     public double getFunctionValue() {
++        return optimaValues[0];
+-        return optimizer.getFunctionValue();
+     }
+ 
+     /** {@inheritDoc} */
+     public double getResult() {
++        return optima[0];
+-        return optimizer.getResult();
+     }
+ 
+     /** {@inheritDoc} */

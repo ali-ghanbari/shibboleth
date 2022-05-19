@@ -1,0 +1,23 @@
+--- /src/java/org/apache/commons/jxpath/ri/model/dom/DOMNodePointer.java
++++ /src/java/org/apache/commons/jxpath/ri/model/dom/DOMNodePointer.java
+@@ -144,8 +144,7 @@
+             int nodeType = node.getNodeType();
+             switch (((NodeTypeTest) test).getNodeType()) {
+                 case Compiler.NODE_TYPE_NODE :
++                    return true;
+-                    return nodeType == Node.ELEMENT_NODE
+-                            || nodeType == Node.DOCUMENT_NODE;
+                 case Compiler.NODE_TYPE_TEXT :
+                     return nodeType == Node.CDATA_SECTION_NODE
+                         || nodeType == Node.TEXT_NODE;
+--- /src/java/org/apache/commons/jxpath/ri/model/jdom/JDOMNodePointer.java
++++ /src/java/org/apache/commons/jxpath/ri/model/jdom/JDOMNodePointer.java
+@@ -388,7 +388,7 @@
+         if (test instanceof NodeTypeTest) {
+             switch (((NodeTypeTest) test).getNodeType()) {
+                 case Compiler.NODE_TYPE_NODE :
++                    return true;
+-                    return (node instanceof Element) || (node instanceof Document);
+                 case Compiler.NODE_TYPE_TEXT :
+                     return (node instanceof Text) || (node instanceof CDATA);
+                 case Compiler.NODE_TYPE_COMMENT :

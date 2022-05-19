@@ -1,0 +1,13 @@
+--- /src/main/java/org/apache/commons/compress/archivers/tar/TarArchiveInputStream.java
++++ /src/main/java/org/apache/commons/compress/archivers/tar/TarArchiveInputStream.java
+@@ -459,7 +459,9 @@
+             int read = 0;
+             while((ch = i.read()) != -1) {
+                 read++;
++                if (ch == '\n') { // blank line in header
++                    break;
++                } else if (ch == ' '){ // End of length string
+-                if (ch == ' '){
+                     // Get keyword
+                     final ByteArrayOutputStream coll = new ByteArrayOutputStream();
+                     while((ch = i.read()) != -1) {

@@ -1,0 +1,20 @@
+--- /src/main/java/com/fasterxml/jackson/databind/ser/PropertyBuilder.java
++++ /src/main/java/com/fasterxml/jackson/databind/ser/PropertyBuilder.java
+@@ -131,7 +131,7 @@
+             // always suppress nulls
+             suppressNulls = true;
+             // and for referential types, also "empty", which in their case means "absent"
++            if (actualType.isReferenceType()) {
+-            if (declaredType.isReferenceType()) {
+                 valueToSuppress = BeanPropertyWriter.MARKER_FOR_EMPTY;
+             }
+             break;
+@@ -147,7 +147,7 @@
+         case ALWAYS: // default
+         default:
+             // we may still want to suppress empty collections, as per [JACKSON-254]:
++            if (actualType.isContainerType()
+-            if (declaredType.isContainerType()
+                     && !_config.isEnabled(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS)) {
+                 valueToSuppress = BeanPropertyWriter.MARKER_FOR_EMPTY;
+             }

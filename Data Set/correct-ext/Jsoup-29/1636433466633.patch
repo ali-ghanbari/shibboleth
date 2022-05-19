@@ -1,0 +1,18 @@
+--- /src/main/java/org/jsoup/nodes/Document.java
++++ /src/main/java/org/jsoup/nodes/Document.java
+@@ -1,5 +1,6 @@
+ package org.jsoup.nodes;
+ 
++import org.jsoup.helper.StringUtil;
+ import org.jsoup.helper.Validate;
+ import org.jsoup.parser.Tag;
+ import org.jsoup.select.Elements;
+@@ -66,7 +67,7 @@
+     public String title() {
+         // title is a preserve whitespace tag (for document output), but normalised here
+         Element titleEl = getElementsByTag("title").first();
++        return titleEl != null ? StringUtil.normaliseWhitespace(titleEl.text()).trim() : "";
+-        return titleEl != null ? titleEl.text().trim() : "";
+     }
+ 
+     /**

@@ -1,0 +1,11 @@
+--- /src/main/java/org/apache/commons/lang3/math/NumberUtils.java	2019-02-20 00:02:30.046357472 +0000
++++ /src/main/java/org/apache/commons/lang3/math/NumberUtils.java	2019-02-20 00:02:30.038357516 +0000
+@@ -486,7 +486,7 @@
+             mant = str.substring(0, decPos);
+         } else {
+             if (expPos > -1) {
+-                mant = str.substring(0, expPos);
++                mant = str.substring(0, decPos + 1);
+             } else {
+                 mant = str;
+             }

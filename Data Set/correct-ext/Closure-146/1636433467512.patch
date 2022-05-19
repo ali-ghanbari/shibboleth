@@ -1,0 +1,12 @@
+--- /src/com/google/javascript/rhino/jstype/JSType.java
++++ /src/com/google/javascript/rhino/jstype/JSType.java
+@@ -703,7 +703,8 @@
+     // other types
+     switch (this.testForEquality(that)) {
+       case TRUE:
++        JSType noType = getNativeType(JSTypeNative.NO_TYPE);
++        return new TypePair(noType, noType);
+-        return new TypePair(null, null);
+ 
+       case FALSE:
+       case UNKNOWN:

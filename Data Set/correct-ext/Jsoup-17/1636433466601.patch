@@ -1,0 +1,11 @@
+--- /src/main/java/org/jsoup/parser/TreeBuilderState.java
++++ /src/main/java/org/jsoup/parser/TreeBuilderState.java
+@@ -1448,7 +1448,7 @@
+         }
+     };
+ 
++    private static String nullString = String.valueOf('\u0000');
+-    private static String nullString = String.valueOf(0x0000);
+ 
+     abstract boolean process(Token t, TreeBuilder tb);
+ 

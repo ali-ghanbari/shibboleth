@@ -1,0 +1,25 @@
+--- /src/com/google/javascript/jscomp/CheckGlobalThis.java
++++ /src/com/google/javascript/jscomp/CheckGlobalThis.java
+@@ -96,6 +96,13 @@
+       // var a = function() { }; // or
+       // function a() {} // or
+       // a.x = function() {};
++      int pType = parent.getType();
++      if (!(pType == Token.BLOCK ||
++            pType == Token.SCRIPT ||
++            pType == Token.NAME ||
++            pType == Token.ASSIGN)) {
++        return false;
++      }
+     }
+ 
+     if (parent != null && parent.getType() == Token.ASSIGN) {
+@@ -143,7 +150,7 @@
+     }
+ 
+     // Also report a THIS with a property access.
++    return parent != null && NodeUtil.isGet(parent);
+-    return false;
+   }
+ 
+   /**

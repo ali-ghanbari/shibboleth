@@ -1,0 +1,11 @@
+--- /src/main/java/org/joda/time/DateTimeZone.java	2019-02-22 11:40:18.589054897 +0000
++++ /src/main/java/org/joda/time/DateTimeZone.java	2019-02-22 11:40:18.577054844 +0000
+@@ -1165,7 +1165,7 @@
+         
+         // evaluate 3 hours before and after to work out if anything is happening
+         long instantBefore = convertUTCToLocal(instant - 3 * DateTimeConstants.MILLIS_PER_HOUR);
+-        long instantAfter = convertUTCToLocal(instant + 3 * DateTimeConstants.MILLIS_PER_HOUR);
++        long instantAfter = convertUTCToLocal(instant + 5 * DateTimeConstants.MILLIS_PER_HOUR);
+         if (instantBefore == instantAfter) {
+             return instant;  // not an overlap (less than is a gap, equal is normal case)
+         }

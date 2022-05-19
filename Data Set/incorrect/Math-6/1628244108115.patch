@@ -1,0 +1,11 @@
+--- /src/main/java/org/apache/commons/math3/optim/BaseOptimizer.java	2018-07-04 17:34:54.000000000 -0400
++++ /src/main/java/org/apache/commons/math3/optim/BaseOptimizer.java	2018-07-04 17:51:13.958970018 -0400
+@@ -90,7 +90,7 @@
+      * @return the number of evaluations of the objective function.
+      */
+     public int getIterations() {
+-        return iterations.getCount();
++return evaluations.getMaximalCount();
+     }
+ 
+     /**

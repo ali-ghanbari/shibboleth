@@ -1,0 +1,92 @@
+--- /src/com/google/javascript/jscomp/TypeCheck.java
++++ /src/com/google/javascript/jscomp/TypeCheck.java
+@@ -182,13 +182,6 @@
+           "original: {2}\n" +
+           "override: {3}");
+ 
+-  static final DiagnosticType HIDDEN_INTERFACE_PROPERTY_MISMATCH =
+-      DiagnosticType.warning(
+-          "JSC_HIDDEN_INTERFACE_PROPERTY_MISMATCH",
+-          "mismatch of the {0} property type and the type " +
+-          "of the property it overrides from interface {1}\n" +
+-          "original: {2}\n" +
+-          "override: {3}");
+   static final DiagnosticType UNKNOWN_OVERRIDE =
+       DiagnosticType.warning(
+           "JSC_UNKNOWN_OVERRIDE",
+@@ -239,7 +232,6 @@
+       HIDDEN_SUPERCLASS_PROPERTY,
+       HIDDEN_INTERFACE_PROPERTY,
+       HIDDEN_SUPERCLASS_PROPERTY_MISMATCH,
+-      HIDDEN_INTERFACE_PROPERTY_MISMATCH,
+       UNKNOWN_OVERRIDE,
+       INTERFACE_METHOD_OVERRIDE,
+       UNKNOWN_EXPR_TYPE,
+@@ -1046,16 +1038,6 @@
+               HIDDEN_INTERFACE_PROPERTY, propertyName,
+               interfaceType.getTopMostDefiningType(propertyName).toString()));
+         }
+-        if (interfaceHasProperty) {
+-          JSType interfacePropType =
+-              interfaceType.getPrototype().getPropertyType(propertyName);
+-          if (!propertyType.canAssignTo(interfacePropType)) {
+-            compiler.report(t.makeError(n,
+-                HIDDEN_INTERFACE_PROPERTY_MISMATCH, propertyName,
+-                interfaceType.getTopMostDefiningType(propertyName).toString(),
+-                interfacePropType.toString(), propertyType.toString()));
+-          }
+-        }
+       }
+     }
+ 
+--- /src/com/google/javascript/jscomp/TypeValidator.java
++++ /src/com/google/javascript/jscomp/TypeValidator.java
+@@ -107,6 +107,13 @@
+           "JSC_INTERFACE_METHOD_NOT_IMPLEMENTED",
+           "property {0} on interface {1} is not implemented by type {2}");
+ 
++  static final DiagnosticType HIDDEN_INTERFACE_PROPERTY_MISMATCH =
++      DiagnosticType.warning(
++        "JSC_HIDDEN_INTERFACE_PROPERTY_MISMATCH",
++        "mismatch of the {0} property type and the type " +
++        "of the property it overrides from interface {1}\n" +
++        "original: {2}\n" +
++        "override: {3}");
+ 
+   static final DiagnosticGroup ALL_DIAGNOSTICS = new DiagnosticGroup(
+       INVALID_CAST,
+@@ -114,7 +121,8 @@
+       MISSING_EXTENDS_TAG_WARNING,
+       DUP_VAR_DECLARATION,
+       HIDDEN_PROPERTY_MISMATCH,
++      INTERFACE_METHOD_NOT_IMPLEMENTED,
++      HIDDEN_INTERFACE_PROPERTY_MISMATCH);
+-      INTERFACE_METHOD_NOT_IMPLEMENTED);
+ 
+   TypeValidator(AbstractCompiler compiler) {
+     this.compiler = compiler;
+@@ -585,7 +593,24 @@
+             prop, implementedInterface.toString(), instance.toString()));
+       }
+       registerMismatch(instance, implementedInterface);
++    } else {
++      JSType found = instance.getPropertyType(prop);
++      JSType required
++        = implementedInterface.getImplicitPrototype().getPropertyType(prop);
++      found = found.restrictByNotNullOrUndefined();
++      required = required.restrictByNotNullOrUndefined();
++      if (!found.canAssignTo(required)) {
+         // Implemented, but not correctly typed
++        if (shouldReport) {
++          FunctionType constructor
++            = implementedInterface.toObjectType().getConstructor();
++          compiler.report(t.makeError(n,
++              HIDDEN_INTERFACE_PROPERTY_MISMATCH, prop,
++              constructor.getTopMostDefiningType(prop).toString(),
++              required.toString(), found.toString()));
++        }
++        registerMismatch(found, required);
++      }
+     }
+   }
+ 

@@ -1,0 +1,18 @@
+--- /src/main/java/com/fasterxml/jackson/core/filter/FilteringParserDelegate.java
++++ /src/main/java/com/fasterxml/jackson/core/filter/FilteringParserDelegate.java
+@@ -235,6 +235,7 @@
+         // If all the conditions matches then check for scalar / non-scalar property
+         if (!_allowMultipleMatches && (_currToken != null) && (_exposedContext == null)) {
+             //if not scalar and ended successfully, and !includePath, then return null
++            if (!_includePath) {
+                 if (_currToken.isStructEnd()) {
+                     if (_headContext.isStartHandled()) {
+                         return (_currToken = null);
+@@ -245,6 +246,7 @@
+                     if (!_headContext.isStartHandled() && (_itemFilter == TokenFilter.INCLUDE_ALL)) {
+                         return (_currToken = null);
+                     }
++                }
+             }
+         }
+         // Anything buffered?

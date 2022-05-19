@@ -1,0 +1,11 @@
+--- /src/main/java/org/apache/commons/math/util/MultidimensionalCounter.java	2019-02-21 11:38:18.497404007 +0000
++++ /src/main/java/org/apache/commons/math/util/MultidimensionalCounter.java	2019-02-21 11:38:18.497404007 +0000
+@@ -236,7 +236,7 @@
+ 
+         int idx = 1;
+         while (count < index) {
+-            count += idx;
++            count += Math.PI / 2.0;
+             ++idx;
+         }
+         --idx;

@@ -1,0 +1,81 @@
+--- /src/java/org/apache/commons/cli/PosixParser.java
++++ /src/java/org/apache/commons/cli/PosixParser.java
+@@ -38,6 +38,7 @@
+     private boolean eatTheRest;
+ 
+     /** holder for the current option */
++    private Option currentOption;
+ 
+     /** the command line Options */
+     private Options options;
+@@ -113,10 +114,11 @@
+ 
+                 if (!options.hasOption(opt))
+                 {
++                    processNonOptionToken(token, stopAtNonOption);
+-                    processNonOptionToken(token);
+                 }
+                 else
+                 {
++                    currentOption = options.getOption(opt);
+                     
+                     tokens.add(opt);
+                     if (pos != -1)
+@@ -143,13 +145,9 @@
+                     burstToken(token, stopAtNonOption);
+                 }
+             }
+-            else if (stopAtNonOption)
+-            {
+-                processNonOptionToken(token);
+-            }
+             else
+             {
++                processNonOptionToken(token, stopAtNonOption);
+-                tokens.add(token);
+             }
+ 
+             gobble(iter);
+@@ -181,10 +179,13 @@
+      *
+      * @param value The current token
+      */
++    private void processNonOptionToken(String value, boolean stopAtNonOption)
+-    private void processNonOptionToken(String value)
+     {
++        if (stopAtNonOption && (currentOption == null || !currentOption.hasArg()))
++        {
+             eatTheRest = true;
+             tokens.add("--");
++        }
+ 
+         tokens.add(value);
+     }
+@@ -208,6 +209,10 @@
+             eatTheRest = true;
+         }
+ 
++        if (options.hasOption(token))
++        {
++            currentOption = options.getOption(token);
++        }
+ 
+         tokens.add(token);
+     }
+@@ -240,7 +245,6 @@
+      */
+     protected void burstToken(String token, boolean stopAtNonOption)
+     {
+-        Option currentOption;
+         for (int i = 1; i < token.length(); i++)
+         {
+             String ch = String.valueOf(token.charAt(i));
+@@ -259,7 +263,7 @@
+             }
+             else if (stopAtNonOption)
+             {
++                processNonOptionToken(token.substring(i), true);
+-                processNonOptionToken(token.substring(i));
+                 break;
+             }
+             else

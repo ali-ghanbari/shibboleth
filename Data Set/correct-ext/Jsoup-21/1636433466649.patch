@@ -1,0 +1,50 @@
+--- /src/main/java/org/jsoup/select/CombiningEvaluator.java
++++ /src/main/java/org/jsoup/select/CombiningEvaluator.java
+@@ -61,6 +61,9 @@
+                 this.evaluators.addAll(evaluators);
+         }
+ 
++        Or() {
++            super();
++        }
+ 
+         public void add(Evaluator e) {
+             evaluators.add(e);
+--- /src/main/java/org/jsoup/select/QueryParser.java
++++ /src/main/java/org/jsoup/select/QueryParser.java
+@@ -55,15 +55,7 @@
+             // hierarchy and extras
+             boolean seenWhite = tq.consumeWhitespace();
+ 
++            if (tq.matchesAny(combinators)) {
+-            if (tq.matchChomp(",")) {
+-                CombiningEvaluator.Or or = new CombiningEvaluator.Or(evals);
+-                evals.clear();
+-                evals.add(or);
+-                while (!tq.isEmpty()) {
+-                    String subQuery = tq.chompTo(",");
+-                    or.add(parse(subQuery));
+-                }
+-            } else if (tq.matchesAny(combinators)) {
+                 combinator(tq.consume());
+             } else if (seenWhite) {
+                 combinator(' ');
+@@ -98,6 +90,18 @@
+             evals.add(new CombiningEvaluator.And(f, new StructuralEvaluator.ImmediatePreviousSibling(e)));
+         else if (combinator == '~')
+             evals.add(new CombiningEvaluator.And(f, new StructuralEvaluator.PreviousSibling(e)));
++        else if (combinator == ',') { // group or
++            CombiningEvaluator.Or or;
++            if (e instanceof CombiningEvaluator.Or) {
++                or = (CombiningEvaluator.Or) e;
++                or.add(f);
++            } else {
++                or = new CombiningEvaluator.Or();
++                or.add(e);
++                or.add(f);
++            }
++            evals.add(or);
++        }
+         else
+             throw new Selector.SelectorParseException("Unknown combinator: " + combinator);
+     }

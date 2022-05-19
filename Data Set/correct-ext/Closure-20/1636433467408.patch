@@ -1,0 +1,12 @@
+--- /src/com/google/javascript/jscomp/PeepholeSubstituteAlternateSyntax.java
++++ /src/com/google/javascript/jscomp/PeepholeSubstituteAlternateSyntax.java
+@@ -217,7 +217,8 @@
+       // slightly different semantics than '' + (a). See
+       // http://code.google.com/p/closure-compiler/issues/detail?id=759
+       Node value = callTarget.getNext();
++      if (value != null && value.getNext() == null &&
++          NodeUtil.isImmutableValue(value)) {
+-      if (value != null) {
+         Node addition = IR.add(
+             IR.string("").srcref(callTarget),
+             value.detachFromParent());

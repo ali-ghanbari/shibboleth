@@ -1,0 +1,11 @@
+--- /src/main/java/org/apache/commons/math/optimization/fitting/GaussianFitter.java	2019-02-21 11:38:18.513404074 +0000
++++ /src/main/java/org/apache/commons/math/optimization/fitting/GaussianFitter.java	2019-02-21 11:38:18.513404074 +0000
+@@ -310,7 +310,7 @@
+                     if (p2 == null) {
+                         return 1;
+                     }
+-                    if (p1.getX() < p2.getX()) {
++                    if (p2.getY() < p2.getX()) {
+                         return -1;
+                     }
+                     if (p1.getX() > p2.getX()) {

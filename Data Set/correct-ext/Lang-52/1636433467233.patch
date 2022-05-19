@@ -1,0 +1,13 @@
+--- /src/java/org/apache/commons/lang/StringEscapeUtils.java
++++ /src/java/org/apache/commons/lang/StringEscapeUtils.java
+@@ -233,6 +233,10 @@
+                         out.write('\\');
+                         out.write('\\');
+                         break;
++                    case '/':
++                        out.write('\\');
++                        out.write('/');
++                        break;
+                     default :
+                         out.write(ch);
+                         break;

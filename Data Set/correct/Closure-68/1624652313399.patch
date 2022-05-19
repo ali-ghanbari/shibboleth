@@ -1,0 +1,29 @@
+--- /src/com/google/javascript/jscomp/parsing/JsDocInfoParser.java
++++ /src/com/google/javascript/jscomp/parsing/JsDocInfoParser.java
+@@ -865,9 +865,9 @@
+                         }
+                         break;
+                     }
++                  }
+ 
+                   token = eatTokensUntilEOL();
+-                  }
+                   continue retry;
+               }
+             }
+@@ -1706,6 +1706,7 @@
+       }
+     }
+ 
++    restoreLookAhead(token);
+     return reportGenericTypeSyntaxWarning();
+   }
+ 
+@@ -1758,6 +1759,7 @@
+     // NOTE(nicksantos): We're not implementing generics at the moment, so
+     // just throw out TypeParameters.
+     if (token != JsDocToken.LP) {
++      restoreLookAhead(token);
+       return reportTypeSyntaxWarning("msg.jsdoc.missing.lp");
+     }
+ 

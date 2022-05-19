@@ -1,0 +1,222 @@
+--- /src/com/google/javascript/jscomp/AbstractCommandLineRunner.java
++++ /src/com/google/javascript/jscomp/AbstractCommandLineRunner.java
+@@ -194,12 +194,11 @@
+       throws FlagUsageException, IOException {
+     DiagnosticGroups diagnosticGroups = getDiagnosticGroups();
+ 
++    if (config.warningGuards != null) {
++      for (WarningGuardSpec.Entry entry : config.warningGuards.entries) {
++        diagnosticGroups.setWarningLevel(options, entry.groupName, entry.level);
++      }
++    }
+-    diagnosticGroups.setWarningLevels(
+-        options, config.jscompError, CheckLevel.ERROR);
+-    diagnosticGroups.setWarningLevels(
+-        options, config.jscompWarning, CheckLevel.WARNING);
+-    diagnosticGroups.setWarningLevels(
+-        options, config.jscompOff, CheckLevel.OFF);
+ 
+     createDefineOrTweakReplacements(config.define, options, false);
+ 
+@@ -1494,26 +1493,13 @@
+       return this;
+     }
+ 
++    private WarningGuardSpec warningGuards = null;
+-    private final List<String> jscompError = Lists.newArrayList();
+ 
+     /**
+      * Add warning guards.
+      */
++    CommandLineConfig setWarningGuardSpec(WarningGuardSpec spec) {
++      this.warningGuards = spec;
+-    CommandLineConfig setJscompError(List<String> jscompError) {
+-      this.jscompError.clear();
+-      this.jscompError.addAll(jscompError);
+-      return this;
+-    }
+-    private final List<String> jscompWarning = Lists.newArrayList();
+-    CommandLineConfig setJscompWarning(List<String> jscompWarning) {
+-      this.jscompWarning.clear();
+-      this.jscompWarning.addAll(jscompWarning);
+-      return this;
+-    }
+-    private final List<String> jscompOff = Lists.newArrayList();
+-    CommandLineConfig setJscompOff(List<String> jscompOff) {
+-      this.jscompOff.clear();
+-      this.jscompOff.addAll(jscompOff);
+       return this;
+     }
+ 
+@@ -1625,9 +1611,26 @@
+    * A little helper class to make it easier to collect warning types
+    * from --jscomp_error, --jscomp_warning, and --jscomp_off.
+    */
++  protected static class WarningGuardSpec {
++    private static class Entry {
++      private final CheckLevel level;
++      private final String groupName;
++
++      private Entry(CheckLevel level, String groupName) {
++        this.level = level;
++        this.groupName = groupName;
++      }
++    }
+-
+ 
+     // The entries, in the order that they were added.
++    private final List<Entry> entries = Lists.newArrayList();
+ 
++    protected void add(CheckLevel level, String groupName) {
++      entries.add(new Entry(level, groupName));
++    }
+ 
++    protected void clear() {
++      entries.clear();
++    }
++  }
+ }
+--- /src/com/google/javascript/jscomp/CommandLineRunner.java
++++ /src/com/google/javascript/jscomp/CommandLineRunner.java
+@@ -23,6 +23,7 @@
+ import com.google.common.collect.Sets;
+ import com.google.common.io.Files;
+ import com.google.common.io.LimitInputStream;
++import com.google.javascript.jscomp.AbstractCommandLineRunner.WarningGuardSpec;
+ 
+ import org.kohsuke.args4j.CmdLineException;
+ import org.kohsuke.args4j.CmdLineParser;
+@@ -91,6 +92,8 @@
+   // I don't really care about unchecked warnings in this class.
+   @SuppressWarnings("unchecked")
+   private static class Flags {
++    private static final WarningGuardSpec warningGuardSpec =
++        new WarningGuardSpec();
+ 
+     @Option(name = "--help",
+         handler = BooleanOptionHandler.class,
+@@ -228,16 +231,19 @@
+     private String create_source_map = "";
+ 
+     @Option(name = "--jscomp_error",
++        handler = WarningGuardErrorOptionHandler.class,
+         usage = "Make the named class of warnings an error. Options:" +
+         DiagnosticGroups.DIAGNOSTIC_GROUP_NAMES)
+     private List<String> jscomp_error = Lists.newArrayList();
+ 
+     @Option(name = "--jscomp_warning",
++        handler = WarningGuardWarningOptionHandler.class,
+         usage = "Make the named class of warnings a normal warning. " +
+         "Options:" + DiagnosticGroups.DIAGNOSTIC_GROUP_NAMES)
+     private List<String> jscomp_warning = Lists.newArrayList();
+ 
+     @Option(name = "--jscomp_off",
++        handler = WarningGuardOffOptionHandler.class,
+         usage = "Turn off the named class of warnings. Options:" +
+         DiagnosticGroups.DIAGNOSTIC_GROUP_NAMES)
+     private List<String> jscomp_off = Lists.newArrayList();
+@@ -386,13 +392,52 @@
+ 
+     // Our own parser for warning guards that preserves the original order
+     // of the flags.
++    public static class WarningGuardErrorOptionHandler
++        extends StringOptionHandler {
++      public WarningGuardErrorOptionHandler(
++          CmdLineParser parser, OptionDef option,
++          Setter<? super String> setter) {
++        super(parser, option, new WarningGuardSetter(setter, CheckLevel.ERROR));
++      }
++    }
+ 
++    public static class WarningGuardWarningOptionHandler
++        extends StringOptionHandler {
++      public WarningGuardWarningOptionHandler(
++          CmdLineParser parser, OptionDef option,
++          Setter<? super String> setter) {
++        super(parser, option,
++            new WarningGuardSetter(setter, CheckLevel.WARNING));
++      }
++    }
+ 
++    public static class WarningGuardOffOptionHandler
++        extends StringOptionHandler {
++      public WarningGuardOffOptionHandler(
++          CmdLineParser parser, OptionDef option,
++          Setter<? super String> setter) {
++        super(parser, option, new WarningGuardSetter(setter, CheckLevel.OFF));
++      }
++    }
+ 
++    private static class WarningGuardSetter implements Setter {
++      private final Setter proxy;
++      private final CheckLevel level;
+ 
++      private WarningGuardSetter(Setter proxy, CheckLevel level) {
++        this.proxy = proxy;
++        this.level = level;
++      }
+ 
++      @Override public boolean isMultiValued() { return proxy.isMultiValued(); }
+ 
++      @Override public Class getType() { return proxy.getType(); }
+ 
++      @Override public void addValue(Object value) throws CmdLineException {
++        proxy.addValue((String) value);
++        warningGuardSpec.add(level, (String) value);
++      }
++    }
+   }
+ 
+   /**
+@@ -482,6 +527,7 @@
+     List<String> processedFileArgs
+         = processArgs(argsInFile.toArray(new String[] {}));
+     CmdLineParser parserFileArgs = new CmdLineParser(flags);
++    Flags.warningGuardSpec.clear();
+     parserFileArgs.parseArgument(processedFileArgs.toArray(new String[] {}));
+ 
+     // Currently we are not supporting this (prevent direct/indirect loops)
+@@ -497,6 +543,7 @@
+     List<String> processedArgs = processArgs(args);
+ 
+     CmdLineParser parser = new CmdLineParser(flags);
++    Flags.warningGuardSpec.clear();
+     isConfigValid = true;
+     try {
+       parser.parseArgument(processedArgs.toArray(new String[] {}));
+@@ -549,9 +596,7 @@
+           .setModuleWrapper(flags.module_wrapper)
+           .setModuleOutputPathPrefix(flags.module_output_path_prefix)
+           .setCreateSourceMap(flags.create_source_map)
++          .setWarningGuardSpec(Flags.warningGuardSpec)
+-          .setJscompError(flags.jscomp_error)
+-          .setJscompWarning(flags.jscomp_warning)
+-          .setJscompOff(flags.jscomp_off)
+           .setDefine(flags.define)
+           .setCharset(flags.charset)
+           .setManageClosureDependencies(flags.manage_closure_dependencies)
+--- /src/com/google/javascript/jscomp/DiagnosticGroups.java
++++ /src/com/google/javascript/jscomp/DiagnosticGroups.java
+@@ -20,7 +20,6 @@
+ import com.google.common.collect.ImmutableMap;
+ import com.google.common.collect.Maps;
+ 
+-import java.util.List;
+ import java.util.Map;
+ 
+ /**
+@@ -183,12 +182,10 @@
+   /**
+    * Adds warning levels by name.
+    */
++  void setWarningLevel(CompilerOptions options,
++      String name, CheckLevel level) {
+-  void setWarningLevels(CompilerOptions options,
+-      List<String> diagnosticGroups, CheckLevel level) {
+-    for (String name : diagnosticGroups) {
+     DiagnosticGroup group = forName(name);
+     Preconditions.checkNotNull(group, "No warning class for name: " + name);
+     options.setWarningLevel(group, level);
+-    }
+   }
+ }

@@ -1,0 +1,11 @@
+--- /src/main/java/org/apache/commons/compress/archivers/tar/TarArchiveEntry.java
++++ /src/main/java/org/apache/commons/compress/archivers/tar/TarArchiveEntry.java
+@@ -856,7 +856,7 @@
+             return true;
+         }
+ 
++        if (!isPaxHeader() && !isGlobalPaxHeader() && getName().endsWith("/")) {
+-        if (getName().endsWith("/")) {
+             return true;
+         }
+ 

@@ -1,0 +1,11 @@
+--- /src/java/org/apache/commons/math/distribution/FDistributionImpl.java	2020-10-10 17:49:59.000000000 +0200
++++ /src/java/org/apache/commons/math/distribution/FDistributionImpl.java	2020-11-06 22:59:16.000000000 +0100
+@@ -145,7 +145,7 @@
+         double d = getDenominatorDegreesOfFreedom();
+             // use mean
+             ret = d / (d - 2.0);
+-        return ret;
++        return 0;
+     }
+     
+     /**

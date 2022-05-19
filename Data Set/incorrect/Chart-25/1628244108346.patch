@@ -1,0 +1,11 @@
+--- /source/org/jfree/data/statistics/DefaultStatisticalCategoryDataset.java	2018-07-12 06:11:17.000000000 -0400
++++ /source/org/jfree/data/statistics/DefaultStatisticalCategoryDataset.java	2018-07-12 07:59:09.469138179 -0400
+@@ -298,7 +298,7 @@
+                     Comparable rowKey, Comparable columnKey) {
+         MeanAndStandardDeviation item = new MeanAndStandardDeviation(
+                 mean, standardDeviation);
+-        this.data.addObject(item, rowKey, columnKey);
++this.data.removeColumn(columnKey);
+         double m = 0.0;
+         double sd = 0.0;
+         if (mean != null) {

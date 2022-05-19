@@ -1,0 +1,96 @@
+--- /src/java/org/apache/commons/cli2/WriteableCommandLine.java
++++ /src/java/org/apache/commons/cli2/WriteableCommandLine.java
+@@ -99,6 +99,7 @@
+      *
+      * @return the current option
+      */
++    Option getCurrentOption();
+ 
+     /**
+      * Sets the current option. This method is called by concrete option
+@@ -107,4 +108,5 @@
+      *
+      * @param currentOption the new current option
+      */
++    void setCurrentOption(Option currentOption);
+ }
+--- /src/java/org/apache/commons/cli2/commandline/WriteableCommandLineImpl.java
++++ /src/java/org/apache/commons/cli2/commandline/WriteableCommandLineImpl.java
+@@ -48,6 +48,8 @@
+     private final Map defaultSwitches = new HashMap();
+     private final List normalised;
+     private final Set prefixes;
++    private Option currentOption;
++    private String checkForOption;
+ 
+     /**
+      * Creates a new WriteableCommandLineImpl rooted on the specified Option, to
+@@ -60,9 +62,16 @@
+                                     final List arguments) {
+         this.prefixes = rootOption.getPrefixes();
+         this.normalised = arguments;
++        setCurrentOption(rootOption);
+     }
+ 
++    public Option getCurrentOption() {
++        return currentOption;
++    }
+ 
++    public void setCurrentOption(Option currentOption) {
++        this.currentOption = currentOption;
++    }
+ 
+     public void addOption(Option option) {
+         options.add(option);
+@@ -231,18 +240,35 @@
+      */
+     public boolean looksLikeOption(final String trigger)
+     {
++        if (checkForOption != null)
++        {
+             // this is a reentrant call
++            return !checkForOption.equals(trigger);
++        }
+ 
++        checkForOption = trigger;
++        try
++        {
+             for (final Iterator i = prefixes.iterator(); i.hasNext();)
+             {
+                 final String prefix = (String) i.next();
+ 
+                 if (trigger.startsWith(prefix))
+                 {
++                    if (getCurrentOption().canProcess(this, trigger)
++                            || getCurrentOption().findOption(trigger) != null)
++                    {
+                         return true;
++                    }
+                 }
+             }
++
+             return false;
++        }
++        finally
++        {
++            checkForOption = null;
++        }
+     }
+ 
+     public String toString() {
+--- /src/java/org/apache/commons/cli2/option/GroupImpl.java
++++ /src/java/org/apache/commons/cli2/option/GroupImpl.java
+@@ -510,7 +510,13 @@
+      */
+     private boolean looksLikeOption(final WriteableCommandLine commandLine,
+             final String trigger) {
++        Option oldOption = commandLine.getCurrentOption();
++        try {
++            commandLine.setCurrentOption(this);
+             return commandLine.looksLikeOption(trigger);
++        } finally {
++            commandLine.setCurrentOption(oldOption);
++        }
+     }
+ }
+ 

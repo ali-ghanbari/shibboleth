@@ -1,0 +1,33 @@
+--- /src/com/google/javascript/jscomp/DevirtualizePrototypeMethods.java
++++ /src/com/google/javascript/jscomp/DevirtualizePrototypeMethods.java
+@@ -359,6 +359,7 @@
+     for (Node child : node.children()) {
+       if (NodeUtil.isThis(child)) {
+         Node newName = Node.newString(Token.NAME, name);
++        newName.setJSType(child.getJSType());
+         node.replaceChild(child, newName);
+       } else {
+         replaceReferencesToThis(child, name);
+--- /src/com/google/javascript/rhino/jstype/FunctionType.java
++++ /src/com/google/javascript/rhino/jstype/FunctionType.java
+@@ -409,6 +409,10 @@
+     return super.hasProperty(name) || "prototype".equals(name);
+   }
+ 
++  @Override
++  public boolean hasOwnProperty(String name) {
++    return super.hasOwnProperty(name) || "prototype".equals(name);
++  }
+ 
+   @Override
+   public JSType getPropertyType(String name) {
+@@ -469,6 +473,9 @@
+     if ("prototype".equals(name)) {
+       ObjectType objType = type.toObjectType();
+       if (objType != null) {
++        if (objType.equals(prototype)) {
++          return true;
++        }
+         return setPrototype(
+             new FunctionPrototypeType(
+                 registry, this, objType, isNativeObjectType()));

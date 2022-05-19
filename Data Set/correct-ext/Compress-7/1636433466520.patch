@@ -1,0 +1,16 @@
+--- /src/main/java/org/apache/commons/compress/archivers/tar/TarUtils.java
++++ /src/main/java/org/apache/commons/compress/archivers/tar/TarUtils.java
+@@ -95,10 +95,11 @@
+         int          end = offset + length;
+ 
+         for (int i = offset; i < end; ++i) {
++            byte b = buffer[i];
++            if (b == 0) { // Trailing null
+-            if (buffer[i] == 0) {
+                 break;
+             }
++            result.append((char) (b & 0xFF)); // Allow for sign-extension
+-            result.append((char) buffer[i]);
+         }
+ 
+         return result.toString();

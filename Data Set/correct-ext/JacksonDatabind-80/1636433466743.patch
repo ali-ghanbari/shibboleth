@@ -1,0 +1,33 @@
+--- /src/main/java/com/fasterxml/jackson/databind/jsontype/impl/StdSubtypeResolver.java
++++ /src/main/java/com/fasterxml/jackson/databind/jsontype/impl/StdSubtypeResolver.java
+@@ -76,6 +76,7 @@
+         }
+         
+         // then annotated types for property itself
++        if (property != null) {
+             Collection<NamedType> st = ai.findSubtypes(property);
+             if (st != null) {
+                 for (NamedType nt : st) {
+@@ -83,6 +84,7 @@
+                             nt.getType());
+                     _collectAndResolve(ac, nt, config, ai, collected);
+                 }            
++            }
+         }
+ 
+         NamedType rootType = new NamedType(rawBase, null);
+@@ -142,12 +144,14 @@
+         _collectAndResolveByTypeId(ac, rootType, config, typesHandled, byName);
+         
+         // then with definitions from property
++        if (property != null) {
+             Collection<NamedType> st = ai.findSubtypes(property);
+             if (st != null) {
+                 for (NamedType nt : st) {
+                     ac = AnnotatedClassResolver.resolveWithoutSuperTypes(config, nt.getType());
+                     _collectAndResolveByTypeId(ac, nt, config, typesHandled, byName);
+                 }            
++            }
+         }
+         // and finally explicit type registrations (highest precedence)
+         if (_registeredSubtypes != null) {

@@ -1,0 +1,14 @@
+--- /src/com/google/javascript/jscomp/CommandLineRunner.java
++++ /src/com/google/javascript/jscomp/CommandLineRunner.java
+@@ -331,7 +331,10 @@
+ 
+       @Override
+       public int parseArguments(Parameters params) throws CmdLineException {
++        String param = null;
++        try {
++          param = params.getParameter(0);
++        } catch (CmdLineException e) {}
+-        String param = params.getParameter(0);
+ 
+         if (param == null) {
+           setter.addValue(true);

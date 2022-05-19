@@ -1,0 +1,103 @@
+--- /src/main/java/com/fasterxml/jackson/core/json/ReaderBasedJsonParser.java
++++ /src/main/java/com/fasterxml/jackson/core/json/ReaderBasedJsonParser.java
+@@ -619,7 +619,6 @@
+         if (_parsingContext.expectComma()) {
+             i = _skipComma(i);
+         }
+-        _updateLocation();
+ 
+         /* And should we now have a name? Always true for Object contexts, since
+          * the intermediate 'expect-value' state is never retained.
+@@ -627,11 +626,13 @@
+         boolean inObject = _parsingContext.inObject();
+         if (inObject) {
+             // First, field name itself:
++            _updateNameLocation();
+             String name = (i == INT_QUOTE) ? _parseName() : _handleOddName(i);
+             _parsingContext.setCurrentName(name);
+             _currToken = JsonToken.FIELD_NAME;
+             i = _skipColon();
+         }
++        _updateLocation();
+ 
+         // Ok: we must have a value... what is it?
+ 
+@@ -770,13 +771,14 @@
+         if (_parsingContext.expectComma()) {
+             i = _skipComma(i);
+         }
+-        _updateLocation();
+ 
+         if (!_parsingContext.inObject()) {
++            _updateLocation();
+             _nextTokenNotInObject(i);
+             return false;
+         }
+ 
++        _updateNameLocation();
+         if (i == INT_QUOTE) {
+             // when doing literal match, must consider escaping:
+             char[] nameChars = sstr.asQuotedChars();
+@@ -848,17 +850,19 @@
+         if (_parsingContext.expectComma()) {
+             i = _skipComma(i);
+         }
+-        _updateLocation();
+         if (!_parsingContext.inObject()) {
++            _updateLocation();
+             _nextTokenNotInObject(i);
+             return null;
+         }
+ 
++        _updateNameLocation();
+         String name = (i == INT_QUOTE) ? _parseName() : _handleOddName(i);
+         _parsingContext.setCurrentName(name);
+         _currToken = JsonToken.FIELD_NAME;
+         i = _skipColon();
+ 
++        _updateLocation();
+         if (i == INT_QUOTE) {
+             _tokenIncomplete = true;
+             _nextToken = JsonToken.VALUE_STRING;
+@@ -914,6 +918,7 @@
+     private final void _isNextTokenNameYes(int i) throws IOException
+     {
+         _currToken = JsonToken.FIELD_NAME;
++        _updateLocation();
+ 
+         switch (i) {
+         case '"':
+@@ -964,6 +969,7 @@
+         _parsingContext.setCurrentName(name);
+         _currToken = JsonToken.FIELD_NAME;
+         i = _skipColon();
++        _updateLocation();
+         if (i == INT_QUOTE) {
+             _tokenIncomplete = true;
+             _nextToken = JsonToken.VALUE_STRING;
+@@ -2668,9 +2674,12 @@
+     public JsonLocation getTokenLocation()
+     {
+         final Object src = _ioContext.getSourceReference();
++        if (_currToken == JsonToken.FIELD_NAME) {
++            return new JsonLocation(src,
++                    -1L, _nameInputTotal, _nameInputRow, _tokenInputCol);
++        }
+         return new JsonLocation(src,
++                -1L, _tokenInputTotal, _tokenInputRow,
+-                -1L, getTokenCharacterOffset(),
+-                getTokenLineNr(),
+                 getTokenColumnNr());
+     }
+ 
+--- /src/main/java/com/fasterxml/jackson/core/json/UTF8StreamJsonParser.java
++++ /src/main/java/com/fasterxml/jackson/core/json/UTF8StreamJsonParser.java
+@@ -3619,7 +3619,7 @@
+                     _nameInputTotal, -1L, _nameInputRow, _tokenInputCol);
+         }
+         return new JsonLocation(src,
++                _tokenInputTotal, -1L, _tokenInputRow,
+-                getTokenCharacterOffset(), -1L, getTokenLineNr(),
+                 getTokenColumnNr());
+     }
+ 

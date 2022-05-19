@@ -1,0 +1,19 @@
+--- /src/main/java/org/apache/commons/cli/DefaultParser.java
++++ /src/main/java/org/apache/commons/cli/DefaultParser.java
+@@ -299,9 +299,15 @@
+     private boolean isShortOption(String token)
+     {
+         // short options (-S, -SV, -S=V, -SV1=V2, -S1S2)
++        if (!token.startsWith("-") || token.length() == 1)
++        {
++            return false;
++        }
+-        return token.startsWith("-") && token.length() >= 2 && options.hasShortOption(token.substring(1, 2));
+ 
+         // remove leading "-" and "=value"
++        int pos = token.indexOf("=");
++        String optName = pos == -1 ? token.substring(1) : token.substring(1, pos);
++        return options.hasShortOption(optName);
+     }
+ 
+     /**

@@ -1,0 +1,14 @@
+--- /src/main/java/com/fasterxml/jackson/databind/introspect/JacksonAnnotationIntrospector.java
++++ /src/main/java/com/fasterxml/jackson/databind/introspect/JacksonAnnotationIntrospector.java
+@@ -745,7 +745,10 @@
+                  */
+             } else if (_hasAnnotation(a, JsonSerialize.class)
+                     || _hasAnnotation(a, JsonView.class)
++                    || _hasAnnotation(a, JsonRawValue.class)
++                    || _hasAnnotation(a, JsonUnwrapped.class)
++                    || _hasAnnotation(a, JsonBackReference.class)
++                    || _hasAnnotation(a, JsonManagedReference.class)) {
+-                    || _hasAnnotation(a, JsonRawValue.class)) {
+                 name = "";
+             } else {
+                 return null;

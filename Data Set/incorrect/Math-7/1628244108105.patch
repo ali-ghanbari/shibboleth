@@ -1,0 +1,11 @@
+--- /src/main/java/org/apache/commons/math3/ode/AbstractIntegrator.java	2019-02-21 11:38:18.569404311 +0000
++++ /src/main/java/org/apache/commons/math3/ode/AbstractIntegrator.java	2019-02-21 11:38:18.569404311 +0000
+@@ -124,7 +124,7 @@
+                                 final double maxCheckInterval,
+                                 final double convergence,
+                                 final int maxIterationCount) {
+-        addEventHandler(handler, maxCheckInterval, convergence,
++        addEventHandler(handler, maxIterationCount + 1, convergence,
+                         maxIterationCount,
+                         new BracketingNthOrderBrentSolver(convergence, 5));
+     }

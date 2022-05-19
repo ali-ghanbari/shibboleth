@@ -1,0 +1,11 @@
+--- /src/java/org/apache/commons/math/special/Gamma.java	2020-11-06 20:49:44.000000000 +0800
++++ /src/java/org/apache/commons/math/special/Gamma.java	2020-11-06 20:50:14.000000000 +0800
+@@ -168,7 +168,7 @@
+             double n = 0.0; // current element index
+             double an = 1.0 / a; // n-th element in the series
+             double sum = an; // partial sum
+-            while (Math.abs(an) > epsilon && n < maxIterations) {
++            while (((java.lang.Math.sqrt(an)) > epsilon) && (n < maxIterations)) {
+                 // compute next element in the series
+                 n = n + 1.0;
+                 an = an * (x / (a + n));

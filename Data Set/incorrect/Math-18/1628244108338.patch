@@ -1,0 +1,11 @@
+--- /src/main/java/org/apache/commons/math3/optimization/direct/CMAESOptimizer.java	2019-02-21 11:38:18.389403552 +0000
++++ /src/main/java/org/apache/commons/math3/optimization/direct/CMAESOptimizer.java	2019-02-21 11:38:18.389403552 +0000
+@@ -511,7 +512,7 @@
+         for (int i = 0; i < lB.length; i++) {
+             if (!Double.isInfinite(lB[i]) ||
+                 !Double.isInfinite(uB[i])) {
+-                hasFiniteBounds = true;
++                hasFiniteBounds = boundaries == null;
+                 break;
+             }
+         }

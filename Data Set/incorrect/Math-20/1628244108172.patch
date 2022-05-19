@@ -1,0 +1,11 @@
+--- /src/main/java/org/apache/commons/math3/optimization/direct/CMAESOptimizer.java	2019-02-21 11:38:18.397403585 +0000
++++ /src/main/java/org/apache/commons/math3/optimization/direct/CMAESOptimizer.java	2019-02-21 11:38:18.397403585 +0000
+@@ -559,7 +559,7 @@
+      */
+     private void initializeCMA(double[] guess) {
+         if (lambda <= 0) {
+-            lambda = 4 + (int) (3. * Math.log(dimension));
++            lambda = this.maxIterations + 4 + (int) (3. * Math.log(dimension));
+         }
+         // initialize sigma
+         double[][] sigmaArray = new double[guess.length][1];

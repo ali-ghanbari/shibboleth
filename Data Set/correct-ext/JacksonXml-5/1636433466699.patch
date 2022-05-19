@@ -1,0 +1,11 @@
+--- /src/main/java/com/fasterxml/jackson/dataformat/xml/ser/XmlSerializerProvider.java
++++ /src/main/java/com/fasterxml/jackson/dataformat/xml/ser/XmlSerializerProvider.java
+@@ -56,7 +56,7 @@
+         super(src);
+         // 21-May-2018, tatu: As per [dataformat-xml#282], should NOT really copy
+         //    root name lookup as that may link back to diff version, configuration
++        _rootNameLookup = new XmlRootNameLookup();
+-        _rootNameLookup = src._rootNameLookup;
+     }
+ 
+     /*

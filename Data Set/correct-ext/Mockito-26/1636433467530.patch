@@ -1,0 +1,11 @@
+--- /src/org/mockito/internal/util/Primitives.java
++++ /src/org/mockito/internal/util/Primitives.java
+@@ -63,6 +63,6 @@
+         primitiveValues.put(int.class, 0);
+         primitiveValues.put(long.class, 0L);
+         primitiveValues.put(float.class, 0F);
++        primitiveValues.put(double.class, 0D);
+-        primitiveValues.put(double.class, 0);
+     }
+ }
+\ No newline at end of file

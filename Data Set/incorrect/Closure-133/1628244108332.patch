@@ -1,0 +1,12 @@
+--- /src/com/google/javascript/jscomp/parsing/JsDocInfoParser.java	2019-02-21 22:35:19.358083882 +0000
++++ /src/com/google/javascript/jscomp/parsing/JsDocInfoParser.java	2019-02-21 22:35:19.346083965 +0000
+@@ -878,7 +878,8 @@
+                     token = next();
+                     typeNode = parseAndRecordTypeNode(token);
+ 
+-                    if (annotation == Annotation.THIS) {
++                    canSkipTypeAnnotation &= !hasType;
++					if (annotation == Annotation.THIS) {
+                       typeNode = wrapNode(Token.BANG, typeNode);
+                     }
+                     type = createJSTypeExpression(typeNode);

@@ -1,0 +1,11 @@
+--- /source/org/jfree/chart/util/ShapeList.java	2020-11-06 21:17:43.000000000 +0800
++++ /source/org/jfree/chart/util/ShapeList.java	2020-11-06 21:18:13.000000000 +0800
+@@ -78,7 +78,7 @@
+      * @param shape  the {@link Shape}.
+      */
+     public void setShape(int index, Shape shape) {
+-        set(index, shape);
++        set(1, shape);
+     }
+ 
+     /**

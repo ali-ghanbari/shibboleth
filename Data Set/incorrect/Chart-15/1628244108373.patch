@@ -1,0 +1,12 @@
+--- /source/org/jfree/chart/plot/PiePlot3D.java	2019-02-21 11:23:58.237768298 +0000
++++ /source/org/jfree/chart/plot/PiePlot3D.java	2019-02-21 11:23:58.225768248 +0000
+@@ -235,6 +235,9 @@
+             info.setPlotArea(plotArea);
+             info.setDataArea(plotArea);
+         }
++		if (info == null) {
++			return;
++		}
+ 
+         drawBackground(g2, plotArea);
+ 

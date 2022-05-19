@@ -1,0 +1,15 @@
+--- /src/com/google/javascript/jscomp/parsing/JsDocInfoParser.java
++++ /src/com/google/javascript/jscomp/parsing/JsDocInfoParser.java
+@@ -1905,7 +1905,11 @@
+    * For expressions on the right hand side of a this: or new:
+    */
+   private Node parseContextTypeExpression(JsDocToken token) {
++    if (token == JsDocToken.QMARK) {
++      return newNode(Token.QMARK);
++    } else {
++      return parseBasicTypeExpression(token);
++    }
+-          return parseTypeName(token);
+   }
+ 
+   /**

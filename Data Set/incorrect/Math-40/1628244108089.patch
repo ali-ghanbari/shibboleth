@@ -1,0 +1,11 @@
+--- /src/main/java/org/apache/commons/math/analysis/solvers/BracketingNthOrderBrentSolver.java	2019-02-21 11:38:18.461403855 +0000
++++ /src/main/java/org/apache/commons/math/analysis/solvers/BracketingNthOrderBrentSolver.java	2019-02-21 11:38:18.461403855 +0000
+@@ -257,7 +257,7 @@
+                     // the guessed root is either not strictly inside the interval or it
+                     // is a NaN (which occurs when some sampling points share the same y)
+                     // we try again with a lower interpolation order
+-                    if (signChangeIndex - start >= end - signChangeIndex) {
++                    if (signChangeIndex - start >= end - signChangeIndex - 1) {
+                         // we have more points before the sign change, drop the lowest point
+                         ++start;
+                     } else {

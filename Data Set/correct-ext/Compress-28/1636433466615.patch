@@ -1,0 +1,18 @@
+--- /src/main/java/org/apache/commons/compress/archivers/tar/TarArchiveInputStream.java
++++ /src/main/java/org/apache/commons/compress/archivers/tar/TarArchiveInputStream.java
+@@ -580,11 +580,14 @@
+         numToRead = Math.min(numToRead, available());
+         
+         totalRead = is.read(buf, offset, numToRead);
+-        count(totalRead);
+         
+         if (totalRead == -1) {
++            if (numToRead > 0) {
++                throw new IOException("Truncated TAR archive");
++            }
+             hasHitEOF = true;
+         } else {
++            count(totalRead);
+             entryOffset += totalRead;
+         }
+ 

@@ -1,0 +1,36 @@
+--- /src/main/java/org/jsoup/parser/Token.java
++++ /src/main/java/org/jsoup/parser/Token.java
+@@ -168,6 +168,7 @@
+ 
+     static class Comment extends Token {
+         final StringBuilder data = new StringBuilder();
++        boolean bogus = false;
+ 
+         Comment() {
+             type = TokenType.Comment;
+--- /src/main/java/org/jsoup/parser/TokeniserState.java
++++ /src/main/java/org/jsoup/parser/TokeniserState.java
+@@ -1091,6 +1091,7 @@
+             // rewind to capture character that lead us here
+             r.unconsume();
+             Token.Comment comment = new Token.Comment();
++            comment.bogus = true;
+             comment.data.append(r.consumeTo('>'));
+             // todo: replace nullChar with replaceChar
+             t.emit(comment);
+--- /src/main/java/org/jsoup/parser/XmlTreeBuilder.java
++++ /src/main/java/org/jsoup/parser/XmlTreeBuilder.java
+@@ -64,6 +64,13 @@
+     void insert(Token.Comment commentToken) {
+         Comment comment = new Comment(commentToken.getData(), baseUri);
+         Node insert = comment;
++        if (commentToken.bogus) { // xml declarations are emitted as bogus comments (which is right for html, but not xml)
++            String data = comment.getData();
++            if (data.length() > 1 && (data.startsWith("!") || data.startsWith("?"))) {
++                String declaration = data.substring(1);
++                insert = new XmlDeclaration(declaration, comment.baseUri(), data.startsWith("!"));
++            }
++        }
+         insertNode(insert);
+     }
+ 

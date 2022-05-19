@@ -1,0 +1,52 @@
+--- /src/com/google/javascript/jscomp/ClosureReverseAbstractInterpreter.java
++++ /src/com/google/javascript/jscomp/ClosureReverseAbstractInterpreter.java
+@@ -205,7 +205,6 @@
+       Node param = condition.getLastChild();
+       if (callee.getType() == GETPROP && param.isQualifiedName()) {
+         JSType paramType =  getTypeIfRefinable(param, blindScope);
+-        if (paramType != null) {
+         Node left = callee.getFirstChild();
+         Node right = callee.getLastChild();
+         if (left.getType() == NAME && "goog".equals(left.getString()) &&
+@@ -215,7 +214,6 @@
+           if (restricter != null) {
+             return restrictParameter(param, paramType, blindScope, restricter,
+                 outcome);
+-            }
+           }
+         }
+       }
+--- /src/com/google/javascript/jscomp/TypeInference.java
++++ /src/com/google/javascript/jscomp/TypeInference.java
+@@ -629,21 +629,29 @@
+       return scope;
+     } else {
+       StaticSlot<JSType> var = scope.getSlot(varName);
++      if (var != null) {
+-      if (var != null &&
+-          !(var.isTypeInferred() && unflowableVarNames.contains(varName))) {
+         // There are two situations where we don't want to use type information
+         // from the scope, even if we have it.
+ 
+         // 1) The var is escaped in a weird way, e.g.,
+         // function f() { var x = 3; function g() { x = null } (x); }
++        boolean isInferred = var.isTypeInferred();
++        boolean unflowable =
++            isInferred && unflowableVarNames.contains(varName);
+ 
+         // 2) We're reading type information from another scope for an
+         // inferred variable.
+         // var t = null; function f() { (t); }
++        boolean nonLocalInferredSlot =
++            isInferred &&
++            syntacticScope.getParent() != null &&
++            var == syntacticScope.getParent().getSlot(varName);
+ 
++        if (!unflowable && !nonLocalInferredSlot) {
+           type = var.getType();
+           if (type == null) {
+             type = getNativeType(UNKNOWN_TYPE);
++          }
+         }
+       }
+     }

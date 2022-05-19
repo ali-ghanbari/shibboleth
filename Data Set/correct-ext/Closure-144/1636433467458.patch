@@ -1,0 +1,120 @@
+--- /src/com/google/javascript/jscomp/FunctionTypeBuilder.java
++++ /src/com/google/javascript/jscomp/FunctionTypeBuilder.java
+@@ -71,6 +71,7 @@
+   private final Scope scope;
+ 
+   private JSType returnType = null;
++  private boolean returnTypeInferred = false;
+   private List<ObjectType> implementedInterfaces = null;
+   private ObjectType baseType = null;
+   private ObjectType thisType = null;
+@@ -197,9 +198,9 @@
+    */
+   FunctionTypeBuilder inferReturnType(@Nullable JSDocInfo info) {
+     returnType = info != null && info.hasReturnType() ?
++        info.getReturnType().evaluate(scope, typeRegistry) : null;
+-        info.getReturnType().evaluate(scope, typeRegistry) :
+-        typeRegistry.getNativeType(UNKNOWN_TYPE);
+     if (templateTypeName != null &&
++        returnType != null &&
+         returnType.restrictByNotNullOrUndefined().isTemplateType()) {
+       reportError(TEMPLATE_TYPE_EXPECTED, fnName);
+     }
+@@ -210,7 +211,37 @@
+    * If we haven't found a return value yet, try to look at the "return"
+    * statements in the function.
+    */
++  FunctionTypeBuilder inferReturnStatements(@Nullable Node functionBlock) {
++    if (functionBlock == null || compiler.getInput(sourceName).isExtern()) {
++      return this;
++    }
++    Preconditions.checkArgument(functionBlock.getType() == Token.BLOCK);
++    if (returnType == null) {
++      boolean hasNonEmptyReturns = false;
++      List<Node> worklist = Lists.newArrayList(functionBlock);
++      while (!worklist.isEmpty()) {
++        Node current = worklist.remove(worklist.size() - 1);
++        int cType = current.getType();
++        if (cType == Token.RETURN && current.getFirstChild() != null ||
++            cType == Token.THROW) {
++          hasNonEmptyReturns = true;
++          break;
++        } else if (NodeUtil.isStatementBlock(current) ||
++            NodeUtil.isControlStructure(current)) {
++          for (Node child = current.getFirstChild();
++               child != null; child = child.getNext()) {
++            worklist.add(child);
++          }
++        }
++      }
+ 
++      if (!hasNonEmptyReturns) {
++        returnType = typeRegistry.getNativeType(VOID_TYPE);
++        returnTypeInferred = true;
++      }
++    }
++    return this;
++  }
+ 
+   /**
+    * Infer the role of the function (whether it's a constructor or interface)
+@@ -493,7 +524,7 @@
+           .withName(fnName)
+           .withSourceNode(sourceNode)
+           .withParamsNode(parametersNode)
++          .withReturnType(returnType, returnTypeInferred)
+-          .withReturnType(returnType)
+           .withTypeOfThis(thisType)
+           .withTemplateName(templateTypeName)
+           .build();
+--- /src/com/google/javascript/jscomp/TypedScopeCreator.java
++++ /src/com/google/javascript/jscomp/TypedScopeCreator.java
+@@ -574,6 +574,7 @@
+       Node fnRoot = isFnLiteral ? rValue : null;
+       Node parametersNode = isFnLiteral ?
+           rValue.getFirstChild().getNext() : null;
++      Node fnBlock = isFnLiteral ? parametersNode.getNext() : null;
+ 
+       if (functionType == null && info != null && info.hasType()) {
+         JSType type = info.getType().evaluate(scope, typeRegistry);
+@@ -614,6 +615,7 @@
+                     .setSourceNode(fnRoot)
+                     .inferFromOverriddenFunction(propType, parametersNode)
+                     .inferThisType(info, owner)
++                    .inferReturnStatements(fnBlock)
+                     .buildAndRegister();
+               }
+             }
+@@ -631,6 +633,7 @@
+             .inferInheritance(info)
+             .inferThisType(info, owner)
+             .inferParameterTypes(parametersNode, info)
++            .inferReturnStatements(fnBlock)
+             .buildAndRegister();
+       }
+ 
+--- /src/com/google/javascript/rhino/jstype/FunctionBuilder.java
++++ /src/com/google/javascript/rhino/jstype/FunctionBuilder.java
+@@ -98,6 +98,11 @@
+   }
+ 
+   /** Set the return type and whether it's inferred. */
++  public FunctionBuilder withReturnType(JSType returnType, boolean inferred) {
++    this.returnType = returnType;
++    this.inferredReturnType = inferred;
++    return this;
++  }
+ 
+   /** Sets an inferred return type. */
+   public FunctionBuilder withInferredReturnType(JSType returnType) {
+--- /src/com/google/javascript/rhino/jstype/FunctionType.java
++++ /src/com/google/javascript/rhino/jstype/FunctionType.java
+@@ -514,7 +514,7 @@
+ 
+   FunctionType cloneWithNewReturnType(JSType newReturnType, boolean inferred) {
+     return new FunctionType(
++        registry, null, source,
+-        registry, null, null,
+         new ArrowType(
+             registry, call.parameters, newReturnType, inferred),
+         typeOfThis, null, false, false);

@@ -1,0 +1,11 @@
+--- /src/main/java/org/apache/commons/math/ode/events/EventState.java	2019-02-21 11:38:18.557404260 +0000
++++ /src/main/java/org/apache/commons/math/ode/events/EventState.java	2019-02-21 11:38:18.557404260 +0000
+@@ -171,7 +172,7 @@
+ 
+             forward = interpolator.isForward();
+             final double t1 = interpolator.getCurrentTime();
+-            final int    n  = Math.max(1, (int) Math.ceil(Math.abs(t1 - t0) / maxCheckInterval));
++            final int    n  = Math.max(1, (int) Math.ceil(Math.abs(convergence - t0) / maxCheckInterval));
+             final double h  = (t1 - t0) / n;
+ 
+             double ta = t0;

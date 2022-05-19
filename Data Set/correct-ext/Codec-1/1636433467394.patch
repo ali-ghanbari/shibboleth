@@ -1,0 +1,33 @@
+--- /src/java/org/apache/commons/codec/language/Caverphone.java
++++ /src/java/org/apache/commons/codec/language/Caverphone.java
+@@ -56,7 +56,7 @@
+         }
+ 
+         // 1. Convert to lowercase
++        txt = txt.toLowerCase(java.util.Locale.ENGLISH);
+-        txt = txt.toLowerCase();
+ 
+         // 2. Remove anything not A-Z
+         txt = txt.replaceAll("[^a-z]", "");
+--- /src/java/org/apache/commons/codec/language/Metaphone.java
++++ /src/java/org/apache/commons/codec/language/Metaphone.java
+@@ -85,7 +85,7 @@
+         }
+         // single character is itself
+         if (txt.length() == 1) {
++            return txt.toUpperCase(java.util.Locale.ENGLISH) ;
+-            return txt.toUpperCase() ;
+         }
+       
+         char[] inwd = txt.toUpperCase(java.util.Locale.ENGLISH).toCharArray() ;
+--- /src/java/org/apache/commons/codec/language/SoundexUtils.java
++++ /src/java/org/apache/commons/codec/language/SoundexUtils.java
+@@ -50,7 +50,7 @@
+             }
+         }
+         if (count == len) {
++            return str.toUpperCase(java.util.Locale.ENGLISH);
+-            return str.toUpperCase();
+         }
+         return new String(chars, 0, count).toUpperCase(java.util.Locale.ENGLISH);
+     }

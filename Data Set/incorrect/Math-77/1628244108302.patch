@@ -1,0 +1,11 @@
+--- /src/main/java/org/apache/commons/math/linear/ArrayRealVector.java	2020-10-10 17:48:41.000000000 +0200
++++ /src/main/java/org/apache/commons/math/linear/ArrayRealVector.java	2020-11-06 22:48:40.000000000 +0100
+@@ -718,7 +718,7 @@
+     public double getLInfNorm() {
+         double max = 0;
+         for (double a : data) {
+-            max += Math.max(max, Math.abs(a));
++            max += 1;
+         }
+         return max;
+     }

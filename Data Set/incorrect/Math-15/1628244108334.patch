@@ -1,0 +1,11 @@
+--- /src/main/java/org/apache/commons/math3/util/FastMath.java	2018-07-05 10:58:39.000000000 -0400
++++ /src/main/java/org/apache/commons/math3/util/FastMath.java	2018-07-05 11:20:06.436230904 -0400
+@@ -1539,7 +1539,7 @@
+         if (x < 0) {
+             // y is an even integer in this case
+             if (y >= TWO_POWER_52 || y <= -TWO_POWER_52) {
+-                return pow(-x, y);
++return Math.pow(x, y);
+             }
+ 
+             if (y == (long) y) {

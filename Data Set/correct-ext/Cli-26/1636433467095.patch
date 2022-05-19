@@ -1,0 +1,25 @@
+--- /src/java/org/apache/commons/cli/OptionBuilder.java
++++ /src/java/org/apache/commons/cli/OptionBuilder.java
+@@ -345,8 +345,10 @@
+      */
+     public static Option create(String opt) throws IllegalArgumentException
+     {
++        Option option = null;
++        try {
+             // create the option
++            option = new Option(opt, description);
+-        Option option = new Option(opt, description);
+ 
+             // set the option properties
+             option.setLongOpt(longopt);
+@@ -356,8 +358,10 @@
+             option.setType(type);
+             option.setValueSeparator(valuesep);
+             option.setArgName(argName);
++        } finally {
+             // reset the OptionBuilder properties
+             OptionBuilder.reset();
++        }
+ 
+         // return the Option instance
+         return option;

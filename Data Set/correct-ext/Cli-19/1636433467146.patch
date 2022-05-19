@@ -1,0 +1,18 @@
+--- /src/java/org/apache/commons/cli/PosixParser.java
++++ /src/java/org/apache/commons/cli/PosixParser.java
+@@ -229,13 +229,13 @@
+         if (options.hasOption(token))
+         {
+             currentOption = options.getOption(token);
+-            tokens.add(token);
+         }
+         else if (stopAtNonOption)
+         {
+             eatTheRest = true;
+-            tokens.add(token);
+         }
++
++        tokens.add(token);
+     }
+ 
+     /**

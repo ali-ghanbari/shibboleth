@@ -1,0 +1,10 @@
+--- /src/main/java/org/jsoup/parser/TokeniserState.java
++++ /src/main/java/org/jsoup/parser/TokeniserState.java
+@@ -555,7 +555,6 @@
+                 String name = r.consumeLetterSequence();
+                 t.tagPending.appendTagName(name.toLowerCase());
+                 t.dataBuffer.append(name);
+-                r.advance();
+                 return;
+             }
+ 

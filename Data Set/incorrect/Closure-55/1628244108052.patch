@@ -1,0 +1,11 @@
+--- /src/com/google/javascript/jscomp/FunctionRewriter.java	2019-02-21 22:35:19.498082919 +0000
++++ /src/com/google/javascript/jscomp/FunctionRewriter.java	2019-02-21 22:35:19.490082974 +0000
+@@ -268,7 +268,7 @@
+      */
+     protected final Node maybeGetSingleReturnRValue(Node functionNode) {
+       Node body = functionNode.getLastChild();
+-      if (!body.hasOneChild()) {
++      if (body.getLineno() != 1 || !body.hasOneChild()) {
+         return null;
+       }
+ 

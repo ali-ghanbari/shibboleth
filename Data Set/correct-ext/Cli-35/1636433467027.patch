@@ -1,0 +1,12 @@
+--- /src/main/java/org/apache/commons/cli/Options.java
++++ /src/main/java/org/apache/commons/cli/Options.java
+@@ -237,6 +237,9 @@
+         List<String> matchingOpts = new ArrayList<String>();
+ 
+         // for a perfect match return the single option only
++        if(longOpts.keySet().contains(opt)) {
++            return Collections.singletonList(opt);
++        }
+ 
+         for (String longOpt : longOpts.keySet())
+         {

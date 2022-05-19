@@ -1,0 +1,14 @@
+--- /src/main/java/com/fasterxml/jackson/databind/cfg/BaseSettings.java
++++ /src/main/java/com/fasterxml/jackson/databind/cfg/BaseSettings.java
+@@ -231,10 +231,9 @@
+         if (_dateFormat == df) {
+             return this;
+         }
+-        TimeZone tz = (df == null) ? _timeZone : df.getTimeZone();
+         return new BaseSettings(_classIntrospector, _annotationIntrospector, _visibilityChecker, _propertyNamingStrategy, _typeFactory,
+                 _typeResolverBuilder, df, _handlerInstantiator, _locale,
++                _timeZone, _defaultBase64);
+-                tz, _defaultBase64);
+     }
+ 
+     public BaseSettings withHandlerInstantiator(HandlerInstantiator hi) {

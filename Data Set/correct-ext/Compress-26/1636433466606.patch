@@ -1,0 +1,20 @@
+--- /src/main/java/org/apache/commons/compress/utils/IOUtils.java
++++ /src/main/java/org/apache/commons/compress/utils/IOUtils.java
+@@ -101,6 +101,17 @@
+             numToSkip -= skipped;
+         }
+             
++        if (numToSkip > 0) {
++            byte[] skipBuf = new byte[SKIP_BUF_SIZE];
++            while (numToSkip > 0) {
++                int read = readFully(input, skipBuf, 0,
++                                     (int) Math.min(numToSkip, SKIP_BUF_SIZE));
++                if (read < 1) {
++                    break;
++                }
++                numToSkip -= read;
++            }
++        }
+         return available - numToSkip;
+     }
+ 

@@ -1,0 +1,12 @@
+--- /src/main/java/org/jsoup/parser/Parser.java
++++ /src/main/java/org/jsoup/parser/Parser.java
+@@ -203,7 +203,8 @@
+         if (key.length() != 0)
+             return Attribute.createFromEncoded(key, value);
+         else {
++            if (value.length() == 0) // no key, no val; unknown char, keep popping so not get stuck
++                tq.advance();
+-            tq.consume();
+                 
+             return null;
+         }

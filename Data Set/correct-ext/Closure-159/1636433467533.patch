@@ -1,0 +1,16 @@
+--- /src/com/google/javascript/jscomp/InlineFunctions.java
++++ /src/com/google/javascript/jscomp/InlineFunctions.java
+@@ -774,10 +774,9 @@
+       Node node, Set<String> changed) {
+     Preconditions.checkArgument(changed != null);
+     // For each referenced function, add a new reference
++    if (node.getType() == Token.NAME) {
++      if (isCandidateUsage(node)) {
++        changed.add(node.getString());
+-    if (node.getType() == Token.CALL) {
+-      Node child = node.getFirstChild();
+-      if (child.getType() == Token.NAME) {
+-        changed.add(child.getString());
+       }
+     }
+ 

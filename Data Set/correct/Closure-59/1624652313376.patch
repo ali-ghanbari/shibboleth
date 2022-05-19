@@ -1,0 +1,12 @@
+--- /src/com/google/javascript/jscomp/Compiler.java
++++ /src/com/google/javascript/jscomp/Compiler.java
+@@ -252,7 +252,8 @@
+           CheckLevel.OFF);
+     }
+ 
++    if (options.checkGlobalThisLevel.isOn() &&
++        !options.disables(DiagnosticGroups.GLOBAL_THIS)) {
+-    if (options.checkGlobalThisLevel.isOn()) {
+       options.setWarningLevel(
+           DiagnosticGroups.GLOBAL_THIS,
+           options.checkGlobalThisLevel);

@@ -1,0 +1,23 @@
+--- /src/main/java/com/fasterxml/jackson/databind/deser/impl/ExternalTypeHandler.java
++++ /src/main/java/com/fasterxml/jackson/databind/deser/impl/ExternalTypeHandler.java
+@@ -225,6 +225,9 @@
+         JsonParser p2 = _tokens[index].asParser(p);
+         JsonToken t = p2.nextToken();
+         // 29-Sep-2015, tatu: As per [databind#942], nulls need special support
++        if (t == JsonToken.VALUE_NULL) {
++            return null;
++        }
+ 
+         TokenBuffer merged = new TokenBuffer(p);
+         merged.writeStartArray();
+@@ -248,6 +251,10 @@
+         JsonParser p2 = _tokens[index].asParser(p);
+         JsonToken t = p2.nextToken();
+         // 29-Sep-2015, tatu: As per [databind#942], nulls need special support
++        if (t == JsonToken.VALUE_NULL) {
++            _properties[index].getProperty().set(bean, null);
++            return;
++        }
+         TokenBuffer merged = new TokenBuffer(p);
+         merged.writeStartArray();
+         merged.writeString(typeId);

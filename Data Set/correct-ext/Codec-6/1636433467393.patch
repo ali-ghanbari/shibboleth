@@ -1,0 +1,29 @@
+--- /src/java/org/apache/commons/codec/binary/Base64InputStream.java
++++ /src/java/org/apache/commons/codec/binary/Base64InputStream.java
+@@ -145,6 +145,7 @@
+         } else if (len == 0) {
+             return 0;
+         } else {
++            int readLen = 0;
+             /*
+              Rationale for while-loop on (readLen == 0):
+              -----
+@@ -161,6 +162,7 @@
+              -----
+              This is a fix for CODEC-101
+             */
++            while (readLen == 0) {
+                 if (!base64.hasData()) {
+                     byte[] buf = new byte[doEncode ? 4096 : 8192];
+                     int c = in.read(buf);
+@@ -175,7 +177,9 @@
+                         base64.decode(buf, 0, c);
+                     }
+                 }
++                readLen = base64.readResults(b, offset, len);
++            }
++            return readLen;
+-            return base64.readResults(b, offset, len);
+         }
+     }
+ 

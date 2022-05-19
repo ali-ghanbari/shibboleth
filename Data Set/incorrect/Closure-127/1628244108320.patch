@@ -1,0 +1,15 @@
+diff --git a/src/com/google/javascript/rhino/Node.java b/src/com/google/javascript/rhino/Node.java
+index 3748316c..9e9d8463 100644
+--- /src/com/google/javascript/rhino/Node.java
++++ /src/com/google/javascript/rhino/Node.java
+@@ -1453,9 +1453,7 @@ public class Node implements Cloneable, Serializable {
+         throw new IllegalStateException();
+       }
+       res = n.checkTreeEqualsImpl(n2);
++      return res;
+-      if (res != null) {
+-        return res;
+-      }
+     }
+     return res;
+   }

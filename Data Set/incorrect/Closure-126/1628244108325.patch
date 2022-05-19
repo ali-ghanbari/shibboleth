@@ -1,0 +1,11 @@
+--- /src/com/google/javascript/jscomp/MinimizeExitPoints.java	2019-02-21 22:35:19.322084130 +0000
++++ /src/com/google/javascript/jscomp/MinimizeExitPoints.java	2019-02-21 22:35:19.306084240 +0000
+@@ -140,7 +141,7 @@
+        */
+       if (NodeUtil.hasFinally(n)) {
+         Node finallyBlock = n.getLastChild();
+-        tryMinimizeExits(finallyBlock, exitType, labelName);
++        tryMinimizeExits(tryBlock, exitType, labelName);
+       }
+     }
+ 

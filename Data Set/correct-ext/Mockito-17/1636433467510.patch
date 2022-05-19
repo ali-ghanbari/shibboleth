@@ -1,0 +1,46 @@
+--- /src/org/mockito/internal/creation/MockSettingsImpl.java
++++ /src/org/mockito/internal/creation/MockSettingsImpl.java
+@@ -17,9 +17,11 @@
+     private Object spiedInstance;
+     private Answer<Object> defaultAnswer;
+     private MockName mockName;
++    private boolean serializable;
+ 
+     public MockSettings serializable() {
++        this.serializable = true;
++        return this;
+-        return this.extraInterfaces(java.io.Serializable.class);
+     }
+ 
+     public MockSettings extraInterfaces(Class<?>... extraInterfaces) {
+@@ -71,7 +73,7 @@
+     }
+ 
+     public boolean isSerializable() {
++        return serializable;
+-        return extraInterfaces != null && java.util.Arrays.asList(extraInterfaces).contains(java.io.Serializable.class);
+     }
+ 
+     public void initiateMockName(Class classToMock) {
+--- /src/org/mockito/internal/util/MockUtil.java
++++ /src/org/mockito/internal/util/MockUtil.java
+@@ -16,6 +16,7 @@
+ import org.mockito.internal.creation.jmock.ClassImposterizer;
+ import org.mockito.internal.util.reflection.LenientCopyTool;
+ 
++import java.io.Serializable;
+ 
+ @SuppressWarnings("unchecked")
+ public class MockUtil {
+@@ -42,7 +43,11 @@
+         Class<?>[] interfaces = settings.getExtraInterfaces();
+ 
+         Class<?>[] ancillaryTypes;
++        if (settings.isSerializable()) {
++            ancillaryTypes = interfaces == null ? new Class<?>[] {Serializable.class} : new ArrayUtils().concat(interfaces, Serializable.class);
++        } else {
+             ancillaryTypes = interfaces == null ? new Class<?>[0] : interfaces;
++        }
+ 
+         Object spiedInstance = settings.getSpiedInstance();
+         

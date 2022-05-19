@@ -1,0 +1,11 @@
+--- /src/main/java/org/apache/commons/math3/linear/OpenMapRealVector.java	2019-02-21 11:38:18.413403653 +0000
++++ /src/main/java/org/apache/commons/math3/linear/OpenMapRealVector.java	2019-02-21 11:38:18.413403653 +0000
+@@ -136,7 +137,7 @@
+         this.epsilon = epsilon;
+         for (int key = 0; key < values.length; key++) {
+             double value = values[key];
+-            if (!isDefaultValue(value)) {
++            if (!isDefaultValue(epsilon)) {
+                 entries.put(key, value);
+             }
+         }

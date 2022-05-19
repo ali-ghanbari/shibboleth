@@ -1,0 +1,80 @@
+--- /src/com/google/javascript/jscomp/AmbiguateProperties.java
++++ /src/com/google/javascript/jscomp/AmbiguateProperties.java
+@@ -207,7 +207,6 @@
+     for (Property p : propertyMap.values()) {
+       if (!p.skipAmbiguating) {
+         ++numRenamedPropertyNames;
+-        computeRelatedTypes(p.type);
+         propsByFreq.add(p);
+       } else {
+         ++numSkippedPropertyNames;
+@@ -353,7 +352,7 @@
+       if (typesRelatedToSet.intersects(prop.typesSet)) {
+         return false;
+       }
++      return !prop.relatedTypesSet.intersects(typesInSet);
+-      return !getRelated(prop.type).intersects(typesInSet);
+     }
+ 
+     /**
+@@ -363,7 +362,7 @@
+      */
+     public void addNode(Property prop) {
+       typesInSet.or(prop.typesSet);
++      typesRelatedToSet.or(prop.relatedTypesSet);
+-      typesRelatedToSet.or(getRelated(prop.type));
+     }
+ 
+     /**
+@@ -550,11 +549,11 @@
+   /** Encapsulates the information needed for renaming a property. */
+   private class Property {
+     final String oldName;
+-    JSType type;
+     String newName;
+     int numOccurrences;
+     boolean skipAmbiguating;
+     JSTypeBitSet typesSet = new JSTypeBitSet(intForType.size());
++    JSTypeBitSet relatedTypesSet = new JSTypeBitSet(intForType.size());
+ 
+     Property(String name) {
+       this.oldName = name;
+@@ -591,12 +590,12 @@
+         return;
+       }
+ 
++      int typeInt = getIntForType(newType);
++      if (!typesSet.get(typeInt)) {
++        computeRelatedTypes(newType);
++        typesSet.set(typeInt);
++        relatedTypesSet.or(getRelatedTypesOnNonUnion(newType));
+-      if (type == null) {
+-        type = newType;
+-      } else {
+-        type = type.getLeastSupertype(newType);
+       }
+-      typesSet.set(getIntForType(newType));
+     }
+   }
+ 
+--- /src/com/google/javascript/jscomp/TypedScopeCreator.java
++++ /src/com/google/javascript/jscomp/TypedScopeCreator.java
+@@ -557,9 +557,17 @@
+       JSType propType = ownerType.getPropertyType(propName);
+       if (propType instanceof FunctionType) {
+         return (FunctionType) propType;
++      } else {
+-      }
+         // If it's not, then check to see if it's implemented
+         // on an implemented interface.
++        for (ObjectType iface :
++                 ownerType.getCtorImplementedInterfaces()) {
++          propType = iface.getPropertyType(propName);
++          if (propType instanceof FunctionType) {
++            return (FunctionType) propType;
++          }
++        }
++      }
+ 
+       return null;
+     }

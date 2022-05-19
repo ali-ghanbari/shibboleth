@@ -1,0 +1,12 @@
+--- /src/main/java/com/fasterxml/jackson/core/json/UTF8StreamJsonParser.java
++++ /src/main/java/com/fasterxml/jackson/core/json/UTF8StreamJsonParser.java
+@@ -122,7 +122,9 @@
+         _inputBuffer = inputBuffer;
+         _inputPtr = start;
+         _inputEnd = end;
++        _currInputRowStart = start;
+         // If we have offset, need to omit that from byte offset, so:
++        _currInputProcessed = -start;
+         _bufferRecyclable = bufferRecyclable;
+     }
+ 

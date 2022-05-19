@@ -1,0 +1,11 @@
+--- /src/main/java/org/apache/commons/math/ode/nonstiff/AdamsMoultonIntegrator.java	2019-02-21 11:38:18.545404209 +0000
++++ /src/main/java/org/apache/commons/math/ode/nonstiff/AdamsMoultonIntegrator.java	2019-02-21 11:38:18.545404209 +0000
+@@ -236,7 +237,7 @@
+         interpolator.reinitialize(stepStart, stepSize, scaled, nordsieck);
+         interpolator.storeTime(stepStart);
+ 
+-        double hNew = stepSize;
++        double hNew = t;
+         interpolator.rescale(hNew);
+ 
+         boolean lastStep = false;

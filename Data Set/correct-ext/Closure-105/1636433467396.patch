@@ -1,0 +1,40 @@
+--- /src/com/google/javascript/jscomp/FoldConstants.java
++++ /src/com/google/javascript/jscomp/FoldConstants.java
+@@ -1474,22 +1474,24 @@
+ 
+     String joinString = NodeUtil.getStringValue(right);
+     List<Node> arrayFoldedChildren = Lists.newLinkedList();
++    StringBuilder sb = null;
+-    StringBuilder sb = new StringBuilder();
+     int foldedSize = 0;
+     Node elem = arrayNode.getFirstChild();
+     // Merges adjacent String nodes.
+     while (elem != null) {
+       if (NodeUtil.isImmutableValue(elem)) {
++        if (sb == null) {
++          sb = new StringBuilder();
++        } else {
+-        if (sb.length() > 0) {
+           sb.append(joinString);
+         }
+         sb.append(NodeUtil.getStringValue(elem));
+       } else {
++        if (sb != null) {
+-        if (sb.length() > 0) {
+           // + 2 for the quotes.
+           foldedSize += sb.length() + 2;
+           arrayFoldedChildren.add(Node.newString(sb.toString()));
++          sb = null;
+-          sb = new StringBuilder();
+         }
+         foldedSize += InlineCostEstimator.getCost(elem);
+         arrayFoldedChildren.add(elem);
+@@ -1497,7 +1499,7 @@
+       elem = elem.getNext();
+     }
+ 
++    if (sb != null) {
+-    if (sb.length() > 0) {
+       // + 2 for the quotes.
+       foldedSize += sb.length() + 2;
+       arrayFoldedChildren.add(Node.newString(sb.toString()));

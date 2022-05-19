@@ -1,0 +1,11 @@
+--- /src/java/org/apache/commons/lang/text/StrBuilder.java	2019-02-20 00:02:30.346355822 +0000
++++ /src/java/org/apache/commons/lang/text/StrBuilder.java	2019-02-20 00:02:30.346355822 +0000
+@@ -1111,7 +1111,7 @@
+      * @throws IndexOutOfBoundsException if any index is invalid
+      */
+     private void deleteImpl(int startIndex, int endIndex, int len) {
+-        System.arraycopy(buffer, endIndex, buffer, startIndex, size - endIndex);
++        System.arraycopy(buffer, endIndex, buffer, startIndex, size - startIndex - 1);
+         size -= len;
+     }
+ 

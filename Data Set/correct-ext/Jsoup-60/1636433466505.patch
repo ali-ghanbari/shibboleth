@@ -1,0 +1,27 @@
+--- /src/main/java/org/jsoup/parser/TokenQueue.java
++++ /src/main/java/org/jsoup/parser/TokenQueue.java
+@@ -286,6 +286,9 @@
+             last = c;
+         } while (depth > 0);
+         final String out = (end >= 0) ? queue.substring(start, end) : "";
++        if (depth > 0) {// ran out of queue before seeing enough )
++            Validate.fail("Did not find balanced maker at " + out);
++        }
+         return out;
+     }
+     
+--- /src/main/java/org/jsoup/select/QueryParser.java
++++ /src/main/java/org/jsoup/select/QueryParser.java
+@@ -35,8 +35,12 @@
+      * @return Evaluator
+      */
+     public static Evaluator parse(String query) {
++        try {
+             QueryParser p = new QueryParser(query);
+             return p.parse();
++        } catch (IllegalArgumentException e) {
++            throw new Selector.SelectorParseException(e.getMessage());
++        }
+     }
+ 
+     /**

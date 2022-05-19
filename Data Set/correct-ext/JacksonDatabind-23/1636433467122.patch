@@ -1,0 +1,99 @@
+--- /src/main/java/com/fasterxml/jackson/databind/ser/std/NumberSerializers.java
++++ /src/main/java/com/fasterxml/jackson/databind/ser/std/NumberSerializers.java
+@@ -51,6 +51,7 @@
+     protected abstract static class Base<T> extends StdScalarSerializer<T>
+         implements ContextualSerializer
+     {
++        protected final static Integer EMPTY_INTEGER = Integer.valueOf(0);
+ 
+         protected final JsonParser.NumberType _numberType;
+         protected final String _schemaType;
+@@ -117,10 +118,15 @@
+     @JacksonStdImpl
+     public final static class ShortSerializer extends Base<Short>
+     {
++        private final static Short EMPTY = (short) 0;
+         final static ShortSerializer instance = new ShortSerializer();
+ 
+         public ShortSerializer() { super(Short.class, JsonParser.NumberType.INT, "number"); }
+ 
++        @Override
++        public boolean isEmpty(SerializerProvider prov, Short value) {
++            return EMPTY.equals(value);
++        }
+ 
+         @Override
+         public void serialize(Short value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+@@ -156,6 +162,10 @@
+             serialize(value, gen, provider);            
+         }
+ 
++        @Override
++        public boolean isEmpty(SerializerProvider prov, Object value) {
++            return EMPTY_INTEGER.equals(value);
++        }
+     }
+ 
+     /**
+@@ -172,6 +182,10 @@
+             super(Number.class, JsonParser.NumberType.INT, "integer");
+         }
+ 
++        @Override
++        public boolean isEmpty(SerializerProvider prov, Number value) {
++            return value.intValue() == 0;
++        }
+ 
+         @Override
+         public void serialize(Number value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+@@ -182,11 +196,16 @@
+     @JacksonStdImpl
+     public final static class LongSerializer extends Base<Object>
+     {
++        private final static Long EMPTY = 0L;
+ 
+         final static LongSerializer instance = new LongSerializer();
+     
+         public LongSerializer() { super(Long.class, JsonParser.NumberType.LONG, "number"); }
+ 
++        @Override
++        public boolean isEmpty(SerializerProvider prov, Object value) {
++            return EMPTY.equals(value);
++        }
+ 
+         @Override
+         public void serialize(Object value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+@@ -197,11 +216,16 @@
+     @JacksonStdImpl
+     public final static class FloatSerializer extends Base<Object>
+     {
++        private final static Float EMPTY = 0f;
+ 
+         final static FloatSerializer instance = new FloatSerializer();
+ 
+         public FloatSerializer() { super(Float.class, JsonParser.NumberType.FLOAT, "number"); }
+ 
++        @Override
++        public boolean isEmpty(SerializerProvider prov, Object value) {
++            return EMPTY.equals(value);
++        }
+ 
+         @Override
+         public void serialize(Object value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+@@ -219,11 +243,16 @@
+     @JacksonStdImpl
+     public final static class DoubleSerializer extends Base<Object>
+     {
++        private final static Double EMPTY = 0d;
+ 
+         final static DoubleSerializer instance = new DoubleSerializer();
+     
+         public DoubleSerializer() { super(Double.class, JsonParser.NumberType.DOUBLE, "number"); }
+ 
++        @Override
++        public boolean isEmpty(SerializerProvider prov, Object value) {
++            return EMPTY.equals(value);
++        }
+ 
+         @Override
+         public void serialize(Object value, JsonGenerator gen, SerializerProvider provider) throws IOException {

@@ -1,0 +1,20 @@
+--- /src/java/org/apache/commons/lang/StringUtils.java
++++ /src/java/org/apache/commons/lang/StringUtils.java
+@@ -1041,11 +1041,13 @@
+      * @return true if the String contains the search String irrespective of
+      * case or false if not or <code>null</code> string input
+      */
+-    public static boolean containsIgnoreCase(String str, String searchStr) {
+-        if (str == null || searchStr == null) {
+-            return false;
++    public static boolean containsIgnoreCase(String name, String desc) {
++        if (name.equals("targetClass")) {
++            if (desc.equals("()Ljava/lang/Class;")) {
++                return true;
+         }
+-        return contains(str.toUpperCase(), searchStr.toUpperCase());
++        }
++        return false;
+     }
+ 
+     // IndexOfAny chars

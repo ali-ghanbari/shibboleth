@@ -1,0 +1,38 @@
+--- /src/main/java/org/apache/commons/csv/CSVParser.java
++++ /src/main/java/org/apache/commons/csv/CSVParser.java
+@@ -286,6 +286,7 @@
+ 
+     private final Lexer lexer;
+ 
++    private final CSVRecordIterator csvRecordIterator;
+     
+     /** A record buffer for getRecord(). Grows as necessary and is reused. */
+     private final List<String> recordList = new ArrayList<>();
+@@ -354,6 +355,7 @@
+ 
+         this.format = format;
+         this.lexer = new Lexer(format, new ExtendedBufferedReader(reader));
++        this.csvRecordIterator = new CSVRecordIterator();
+         this.headerMap = this.initializeHeader();
+         this.characterOffset = characterOffset;
+         this.recordNumber = recordNumber - 1;
+@@ -520,7 +522,10 @@
+      */
+     @Override
+     public Iterator<CSVRecord> iterator() {
++        return csvRecordIterator;
++    }
++    
++    class CSVRecordIterator implements Iterator<CSVRecord> {
+-        return new Iterator<CSVRecord>() {
+         private CSVRecord current;
+   
+         private CSVRecord getNextRecord() {
+@@ -568,7 +573,6 @@
+             throw new UnsupportedOperationException();
+         }
+     };
+-    }
+ 
+     /**
+      * Parses the next record from the current point in the stream.

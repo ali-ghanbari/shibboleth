@@ -1,0 +1,30 @@
+--- /src/java/org/apache/commons/cli/PosixParser.java
++++ /src/java/org/apache/commons/cli/PosixParser.java
+@@ -125,7 +125,7 @@
+             // single hyphen
+             else if ("-".equals(token))
+             {
++                tokens.add(token);
+-                processSingleHyphen(token);
+             }
+             else if (token.startsWith("-"))
+             {
+@@ -210,10 +210,6 @@
+             tokens.add(value);
+         }
+     }
+-    private void processSingleHyphen(String hyphen)
+-    {
+-        tokens.add(hyphen);
+-    }
+ 
+     /**
+      * <p>If an {@link Option} exists for <code>token</code> then
+@@ -238,6 +234,7 @@
+         else if (stopAtNonOption)
+         {
+             eatTheRest = true;
++            tokens.add(token);
+         }
+     }
+ 

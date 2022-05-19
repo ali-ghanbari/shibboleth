@@ -1,0 +1,4 @@
+1074,0.5,"org.jfree.data.statistics.DefaultBoxAndWhiskerCategoryDataset.add(org.jfree.data.statistics.BoxAndWhiskerItem,java.lang.Comparable,java.lang.Comparable);org.jfree.data.statistics.DefaultBoxAndWhiskerCategoryDataset.updateBounds()",./patches-pool/1074-DefaultBoxAndWhiskerCategoryDataset.class,CORRECT
+1075,0.5,org.jfree.data.Range.equals(java.lang.Object),./patches-pool/1075-Range.class,INCORRECT
+1076,0.5,org.jfree.data.Range.equals(java.lang.Object),./patches-pool/1076-Range.class,INCORRECT
+1077,0.5,org.jfree.data.Range.equals(java.lang.Object),./patches-pool/1077-Range.class,INCORRECT

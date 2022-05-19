@@ -1,0 +1,32 @@
+--- /src/main/java/org/jsoup/nodes/DocumentType.java
++++ /src/main/java/org/jsoup/nodes/DocumentType.java
+@@ -1,6 +1,7 @@
+ package org.jsoup.nodes;
+ 
+ import org.jsoup.helper.StringUtil;
++import org.jsoup.helper.Validate;
+ 
+ /**
+  * A {@code <!DOCTPYE>} node.
+@@ -18,6 +19,7 @@
+     public DocumentType(String name, String publicId, String systemId, String baseUri) {
+         super(baseUri);
+ 
++        Validate.notEmpty(name);
+         attr("name", name);
+         attr("publicId", publicId);
+         attr("systemId", systemId);
+@@ -30,11 +32,11 @@
+ 
+     @Override
+     void outerHtmlHead(StringBuilder accum, int depth, Document.OutputSettings out) {
++        accum.append("<!DOCTYPE ").append(attr("name"));
+-        accum.append("<!DOCTYPE html");
+         if (!StringUtil.isBlank(attr("publicId")))
+             accum.append(" PUBLIC \"").append(attr("publicId")).append("\"");
+         if (!StringUtil.isBlank(attr("systemId")))
++            accum.append(" \"").append(attr("systemId")).append("\"");
+-            accum.append(' ').append(attr("systemId")).append("\"");
+         accum.append('>');
+     }
+ 

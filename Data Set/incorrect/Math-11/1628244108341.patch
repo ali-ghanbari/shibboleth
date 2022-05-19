@@ -1,0 +1,22 @@
+--- /src/main/java/org/apache/commons/math3/distribution/MultivariateNormalDistribution.java
++++ /src/main/java/org/apache/commons/math3/distribution/MultivariateNormalDistribution.java
+@@ -174,15 +174,10 @@
+     }
+ 
+     /** {@inheritDoc} */
+-    public double density(final double[] vals) throws DimensionMismatchException {
+-        final int dim = getDimension();
+-        if (vals.length != dim) {
+-            throw new DimensionMismatchException(vals.length, dim);
+-        }
+-
+-        return FastMath.pow(2 * FastMath.PI, -dim / 2) *
+-            FastMath.pow(covarianceMatrixDeterminant, -0.5) *
+-            getExponentTerm(vals);
++    public double density(double[] list) {
++    double m = Double.NEGATIVE_INFINITY;
++    for(double x : list) m = Math.max(m, x);
++    return m;
+     }
+ 
+     /**

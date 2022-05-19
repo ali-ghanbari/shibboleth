@@ -1,0 +1,15 @@
+--- /src/com/google/javascript/jscomp/MaybeReachingVariableUse.java
++++ /src/com/google/javascript/jscomp/MaybeReachingVariableUse.java
+@@ -157,6 +157,12 @@
+   }
+ 
+   private boolean hasExceptionHandler(Node cfgNode) {
++    List<DiGraphEdge<Node, Branch>> branchEdges = getCfg().getOutEdges(cfgNode);
++    for (DiGraphEdge<Node, Branch> edge : branchEdges) {
++      if (edge.getValue() == Branch.ON_EX) {
++        return true;
++      }
++    }
+     return false;
+   }
+ 

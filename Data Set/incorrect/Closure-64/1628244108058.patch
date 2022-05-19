@@ -1,0 +1,13 @@
+diff --git a/src/com/google/javascript/jscomp/Compiler.java b/src/com/google/javascript/jscomp/Compiler.java
+index 71f76d83..9bf87bba 100644
+--- /src/com/google/javascript/jscomp/Compiler.java
++++ /src/com/google/javascript/jscomp/Compiler.java
+@@ -1290,7 +1290,7 @@ public class Compiler extends AbstractCompiler {
+             int i = 0;
+             for (Node scriptNode = jsRoot.getFirstChild();
+                  scriptNode != null;
+-                 scriptNode = scriptNode.getNext()) {
++                 scriptNode = null) {
+               toSource(cb, i++, scriptNode);
+             }
+           }

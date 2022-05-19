@@ -1,0 +1,154 @@
+--- /src/java/org/apache/commons/jxpath/ri/NamespaceResolver.java
++++ /src/java/org/apache/commons/jxpath/ri/NamespaceResolver.java
+@@ -44,6 +44,24 @@
+      * @return prefix if found
+      * @since JXPath 1.3
+      */
++    protected static String getPrefix(NodePointer pointer, String namespaceURI) {
++        NodePointer currentPointer = pointer;
++        while (currentPointer != null) {
++            NodeIterator ni = currentPointer.namespaceIterator();
++            for (int position = 1; ni != null && ni.setPosition(position); position++) {
++                NodePointer nsPointer = ni.getNodePointer();
++                String uri = nsPointer.getNamespaceURI();
++                if (uri.equals(namespaceURI)) {
++                    String prefix = nsPointer.getName().getName();
++                    if (!"".equals(prefix)) {
++                        return prefix;
++                    }
++                }
++            }
++            currentPointer = pointer.getParent();
++        }
++        return null;
++    }
+ 
+     /**
+      * Create a new NamespaceResolver.
+@@ -105,6 +123,10 @@
+      * @return namespace URI or null if the prefix is undefined.
+      */
+     public synchronized String getNamespaceURI(String prefix) {
++        String uri = getExternallyRegisteredNamespaceURI(prefix);
++        return uri == null && pointer != null ? pointer.getNamespaceURI(prefix)
++                : uri;
++    }
+ 
+     /**
+      * Given a prefix, returns an externally registered namespace URI.
+@@ -113,14 +135,11 @@
+      * @return namespace URI or null if the prefix is undefined.
+      * @since JXPath 1.3
+      */
++     protected synchronized String getExternallyRegisteredNamespaceURI(
++            String prefix) {
+         String uri = (String) namespaceMap.get(prefix);
++        return uri == null && parent != null ? parent
++                .getExternallyRegisteredNamespaceURI(prefix) : uri;
+-        if (uri == null && pointer != null) {
+-            uri = pointer.getNamespaceURI(prefix);
+-        }
+-        if (uri == null && parent != null) {
+-            return parent.getNamespaceURI(prefix);
+-        }
+-        return uri;
+     }
+ 
+     /**
+@@ -129,6 +148,10 @@
+      * @return String prefix
+      */
+     public synchronized String getPrefix(String namespaceURI) {
++        String prefix = getExternallyRegisteredPrefix(namespaceURI);
++        return prefix == null && pointer != null ? getPrefix(pointer,
++                namespaceURI) : prefix;
++    }
+ 
+     /**
+      * Get the nearest prefix found that matches an externally-registered namespace. 
+@@ -136,19 +159,9 @@
+      * @return String prefix if found.
+      * @since JXPath 1.3
+      */
++    protected synchronized String getExternallyRegisteredPrefix(String namespaceURI) {
+         if (reverseMap == null) {
+             reverseMap = new HashMap();
+-            NodeIterator ni = pointer.namespaceIterator();
+-            if (ni != null) {
+-                for (int position = 1; ni.setPosition(position); position++) {
+-                    NodePointer nsPointer = ni.getNodePointer();
+-                    String uri = nsPointer.getNamespaceURI();                    
+-                    String prefix = nsPointer.getName().getName();
+-                    if (!"".equals(prefix)) {
+-                        reverseMap.put(uri, prefix);
+-                    }
+-                }
+-            }
+             Iterator it = namespaceMap.entrySet().iterator();
+             while (it.hasNext()) {
+                 Map.Entry entry = (Map.Entry) it.next();
+@@ -156,10 +169,8 @@
+             }
+         }
+         String prefix = (String) reverseMap.get(namespaceURI);
++        return prefix == null && parent != null ? parent
++                .getExternallyRegisteredPrefix(namespaceURI) : prefix;
+-        if (prefix == null && parent != null) {
+-            return parent.getPrefix(namespaceURI);
+-        }
+-        return prefix;
+     }
+ 
+     /**
+@@ -197,4 +208,4 @@
+         }
+     }
+ 
++}
+\ No newline at end of file
+-}
+--- /src/java/org/apache/commons/jxpath/ri/model/dom/DOMNodePointer.java
++++ /src/java/org/apache/commons/jxpath/ri/model/dom/DOMNodePointer.java
+@@ -26,6 +26,7 @@
+ import org.apache.commons.jxpath.JXPathException;
+ import org.apache.commons.jxpath.Pointer;
+ import org.apache.commons.jxpath.ri.Compiler;
++import org.apache.commons.jxpath.ri.NamespaceResolver;
+ import org.apache.commons.jxpath.ri.QName;
+ import org.apache.commons.jxpath.ri.compiler.NodeNameTest;
+ import org.apache.commons.jxpath.ri.compiler.NodeTest;
+@@ -58,6 +59,7 @@
+     private Map namespaces;
+     private String defaultNamespace;
+     private String id;
++    private NamespaceResolver localNamespaceResolver;
+ 
+     public static final String XML_NAMESPACE_URI = 
+             "http://www.w3.org/XML/1998/namespace";
+@@ -186,6 +188,13 @@
+     /* (non-Javadoc)
+      * @see org.apache.commons.jxpath.ri.model.NodePointer#getNamespaceResolver()
+      */
++    public synchronized NamespaceResolver getNamespaceResolver() {
++        if (localNamespaceResolver == null) {
++            localNamespaceResolver = new NamespaceResolver(super.getNamespaceResolver());
++            localNamespaceResolver.setNamespaceContextPointer(this);
++        }
++        return localNamespaceResolver;
++    }
+ 
+     public String getNamespaceURI(String prefix) {
+         if (prefix == null || prefix.equals("")) {
+@@ -412,7 +421,11 @@
+         Element element = (Element) node;
+         String prefix = name.getPrefix();
+         if (prefix != null) {
++            String ns = null;
++            NamespaceResolver nsr = getNamespaceResolver();
++            if (nsr != null) {
++                ns = nsr.getNamespaceURI(prefix);
++            }
+-            String ns = getNamespaceURI(prefix);
+             if (ns == null) {
+                 throw new JXPathException(
+                     "Unknown namespace prefix: " + prefix);

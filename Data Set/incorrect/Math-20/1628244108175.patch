@@ -1,0 +1,13 @@
+--- /src/main/java/org/apache/commons/math3/optimization/direct/CMAESOptimizer.java	2020-11-06 20:43:39.000000000 +0800
++++ /src/main/java/org/apache/commons/math3/optimization/direct/CMAESOptimizer.java	2020-11-06 20:45:07.000000000 +0800
+@@ -254,9 +254,7 @@
+      * @param inputSigma Initial search volume; sigma of offspring objective variables.
+      */
+     public CMAESOptimizer(int lambda, double[] inputSigma) {
+-        this(lambda, inputSigma, DEFAULT_MAXITERATIONS, DEFAULT_STOPFITNESS,
+-             DEFAULT_ISACTIVECMA, DEFAULT_DIAGONALONLY,
+-             DEFAULT_CHECKFEASABLECOUNT, DEFAULT_RANDOMGENERATOR, false);
++        this(lambda, null, DEFAULT_MAXITERATIONS, DEFAULT_STOPFITNESS, DEFAULT_ISACTIVECMA, DEFAULT_DIAGONALONLY, DEFAULT_CHECKFEASABLECOUNT, DEFAULT_RANDOMGENERATOR, false);
+     }
+ 
+     /**

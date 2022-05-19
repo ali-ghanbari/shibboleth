@@ -1,0 +1,47 @@
+--- /src/main/java/org/jsoup/UncheckedIOException.java
++++ /src/main/java/org/jsoup/UncheckedIOException.java
+@@ -7,6 +7,9 @@
+         super(cause);
+     }
+ 
++    public UncheckedIOException(String message) {
++        super(new IOException(message));
++    }
+ 
+     public IOException ioException() {
+         return (IOException) getCause();
+--- /src/main/java/org/jsoup/parser/CharacterReader.java
++++ /src/main/java/org/jsoup/parser/CharacterReader.java
+@@ -34,6 +34,9 @@
+         charBuf = new char[sz > maxBufferLen ? maxBufferLen : sz];
+         bufferUp();
+ 
++        if (isBinary()) {
++            throw new UncheckedIOException("Input is binary and unsupported");
++        }
+     }
+ 
+     public CharacterReader(Reader input) {
+@@ -449,13 +452,22 @@
+         return (nextIndexOf(loScan) > -1) || (nextIndexOf(hiScan) > -1);
+     }
+ 
++    private static final int numNullsConsideredBinary = 10; // conservative
+ 
+     /**
+      *  Heuristic to determine if the current buffer looks like binary content. Reader will already hopefully be
+      *  decoded correctly, so a bunch of NULLs indicates a binary file
+      */
++    boolean isBinary() {
++        int nullsSeen = 0;
+ 
++        for (int i = bufPos; i < bufLength; i++) {
++            if (charBuf[i] == '\0')
++                nullsSeen++;
++        }
+ 
++        return nullsSeen >= numNullsConsideredBinary;
++    }
+ 
+     @Override
+     public String toString() {

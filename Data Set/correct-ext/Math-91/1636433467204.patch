@@ -1,0 +1,13 @@
+--- /src/java/org/apache/commons/math/fraction/Fraction.java
++++ /src/java/org/apache/commons/math/fraction/Fraction.java
+@@ -256,8 +256,8 @@
+      *         than <tt>object</tt>, 0 if they are equal.
+      */
+     public int compareTo(Fraction object) {
++        long nOd = ((long) numerator) * object.denominator;
++        long dOn = ((long) denominator) * object.numerator;
+-        double nOd = doubleValue();
+-        double dOn = object.doubleValue();
+         return (nOd < dOn) ? -1 : ((nOd > dOn) ? +1 : 0);
+     }
+     

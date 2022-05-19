@@ -1,0 +1,30 @@
+--- /src/java/org/apache/commons/jxpath/ri/compiler/CoreFunction.java
++++ /src/java/org/apache/commons/jxpath/ri/compiler/CoreFunction.java
+@@ -653,18 +653,27 @@
+     protected Object functionFloor(EvalContext context) {
+         assertArgCount(1);
+         double v = InfoSetUtil.doubleValue(getArg1().computeValue(context));
++        if (Double.isNaN(v) || Double.isInfinite(v)) {
++        	return new Double(v);
++        }
+         return new Double(Math.floor(v));
+     }
+ 
+     protected Object functionCeiling(EvalContext context) {
+         assertArgCount(1);
+         double v = InfoSetUtil.doubleValue(getArg1().computeValue(context));
++        if (Double.isNaN(v) || Double.isInfinite(v)) {
++        	return new Double(v);
++        }
+         return new Double(Math.ceil(v));
+     }
+ 
+     protected Object functionRound(EvalContext context) {
+         assertArgCount(1);
+         double v = InfoSetUtil.doubleValue(getArg1().computeValue(context));
++        if (Double.isNaN(v) || Double.isInfinite(v)) {
++        	return new Double(v);
++        }
+         return new Double(Math.round(v));
+     }
+ 

@@ -1,0 +1,112 @@
+--- /src/main/java/org/jsoup/nodes/DocumentType.java
++++ /src/main/java/org/jsoup/nodes/DocumentType.java
+@@ -12,6 +12,7 @@
+     public static final String PUBLIC_KEY = "PUBLIC";
+     public static final String SYSTEM_KEY = "SYSTEM";
+     private static final String NAME = "name";
++    private static final String PUB_SYS_KEY = "pubSysKey"; // PUBLIC or SYSTEM
+     private static final String PUBLIC_ID = "publicId";
+     private static final String SYSTEM_ID = "systemId";
+     // todo: quirk mode from publicId and systemId
+@@ -26,6 +29,9 @@
+ 
+         attr(NAME, name);
+         attr(PUBLIC_ID, publicId);
++        if (has(PUBLIC_ID)) {
++            attr(PUB_SYS_KEY, PUBLIC_KEY);
++        }
+         attr(SYSTEM_ID, systemId);
+     }
+ 
+@@ -36,7 +42,16 @@
+      * @param systemId the doctype's system ID
+      * @param baseUri the doctype's base URI
+      */
++    public DocumentType(String name, String pubSysKey, String publicId, String systemId, String baseUri) {
++        super(baseUri);
+ 
++        attr(NAME, name);
++        if (pubSysKey != null) {
++            attr(PUB_SYS_KEY, pubSysKey);
++        }
++        attr(PUBLIC_ID, publicId);
++        attr(SYSTEM_ID, systemId);
++    }
+ 
+     @Override
+     public String nodeName() {
+@@ -53,8 +68,10 @@
+         }
+         if (has(NAME))
+             accum.append(" ").append(attr(NAME));
++        if (has(PUB_SYS_KEY))
++            accum.append(" ").append(attr(PUB_SYS_KEY));
+         if (has(PUBLIC_ID))
++            accum.append(" \"").append(attr(PUBLIC_ID)).append('"');
+-            accum.append(" PUBLIC \"").append(attr(PUBLIC_ID)).append('"');
+         if (has(SYSTEM_ID))
+             accum.append(" \"").append(attr(SYSTEM_ID)).append('"');
+         accum.append('>');
+--- /src/main/java/org/jsoup/parser/HtmlTreeBuilderState.java
++++ /src/main/java/org/jsoup/parser/HtmlTreeBuilderState.java
+@@ -20,7 +20,7 @@
+                 // todo: quirk state check on doctype ids
+                 Token.Doctype d = t.asDoctype();
+                 DocumentType doctype = new DocumentType(
++                    tb.settings.normalizeTag(d.getName()), d.getPubSysKey(), d.getPublicIdentifier(), d.getSystemIdentifier(), tb.getBaseUri());
+-                    tb.settings.normalizeTag(d.getName()), d.getPublicIdentifier(), d.getSystemIdentifier(), tb.getBaseUri());
+                 tb.getDocument().appendChild(doctype);
+                 if (d.isForceQuirks())
+                     tb.getDocument().quirksMode(Document.QuirksMode.quirks);
+--- /src/main/java/org/jsoup/parser/Token.java
++++ /src/main/java/org/jsoup/parser/Token.java
+@@ -32,6 +32,7 @@
+ 
+     static final class Doctype extends Token {
+         final StringBuilder name = new StringBuilder();
++        String pubSysKey = null;
+         final StringBuilder publicIdentifier = new StringBuilder();
+         final StringBuilder systemIdentifier = new StringBuilder();
+         boolean forceQuirks = false;
+@@ -43,6 +44,7 @@
+         @Override
+         Token reset() {
+             reset(name);
++            pubSysKey = null;
+             reset(publicIdentifier);
+             reset(systemIdentifier);
+             forceQuirks = false;
+@@ -53,6 +55,9 @@
+             return name.toString();
+         }
+ 
++        String getPubSysKey() {
++            return pubSysKey;
++        }
+ 
+         String getPublicIdentifier() {
+             return publicIdentifier.toString();
+--- /src/main/java/org/jsoup/parser/TokeniserState.java
++++ /src/main/java/org/jsoup/parser/TokeniserState.java
+@@ -1192,8 +1192,10 @@
+                 t.emitDoctypePending();
+                 t.advanceTransition(Data);
+             } else if (r.matchConsumeIgnoreCase(DocumentType.PUBLIC_KEY)) {
++                t.doctypePending.pubSysKey = DocumentType.PUBLIC_KEY;
+                 t.transition(AfterDoctypePublicKeyword);
+             } else if (r.matchConsumeIgnoreCase(DocumentType.SYSTEM_KEY)) {
++                t.doctypePending.pubSysKey = DocumentType.SYSTEM_KEY;
+                 t.transition(AfterDoctypeSystemKeyword);
+             } else {
+                 t.error(this);
+--- /src/main/java/org/jsoup/parser/XmlTreeBuilder.java
++++ /src/main/java/org/jsoup/parser/XmlTreeBuilder.java
+@@ -97,7 +97,7 @@
+     }
+ 
+     void insert(Token.Doctype d) {
++        DocumentType doctypeNode = new DocumentType(settings.normalizeTag(d.getName()), d.getPubSysKey(), d.getPublicIdentifier(), d.getSystemIdentifier(), baseUri);
+-        DocumentType doctypeNode = new DocumentType(settings.normalizeTag(d.getName()), d.getPublicIdentifier(), d.getSystemIdentifier(), baseUri);
+         insertNode(doctypeNode);
+     }
+ 

@@ -1,0 +1,11 @@
+--- /src/main/java/org/apache/commons/math3/geometry/partitioning/AbstractRegion.java	2019-02-21 11:38:18.433403737 +0000
++++ /src/main/java/org/apache/commons/math3/geometry/partitioning/AbstractRegion.java	2019-02-21 11:38:18.433403737 +0000
+@@ -202,7 +202,7 @@
+                 break;
+             case BOTH:
+                 final SubHyperplane.SplitSubHyperplane<S> split = other.split(inserted);
+-                plusList.add(split.getPlus());
++                plusList.add(0, split.getPlus());
+                 minusList.add(split.getMinus());
+                 break;
+             default:

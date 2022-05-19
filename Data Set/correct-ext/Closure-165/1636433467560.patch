@@ -1,0 +1,115 @@
+--- /src/com/google/javascript/rhino/jstype/JSTypeRegistry.java
++++ /src/com/google/javascript/rhino/jstype/JSTypeRegistry.java
+@@ -695,6 +695,10 @@
+         if (!greatestSubtype.isEmptyType()) {
+           // We've found a type with this property. Now we just have to make
+           // sure it's not a type used for internal bookkeeping.
++          RecordType maybeRecordType = greatestSubtype.toMaybeRecordType();
++          if (maybeRecordType != null && maybeRecordType.isSynthetic()) {
++            continue;
++          }
+ 
+           return true;
+         }
+--- /src/com/google/javascript/rhino/jstype/ObjectType.java
++++ /src/com/google/javascript/rhino/jstype/ObjectType.java
+@@ -287,6 +287,10 @@
+    * don't actually exist in the user's program. They're just used for
+    * bookkeeping in the type system.
+    */
++  public final boolean defineSynthesizedProperty(String propertyName,
++      JSType type, Node propertyNode) {
++    return defineProperty(propertyName, type, false, propertyNode);
++  }
+ 
+   /**
+    * Defines a property whose type is inferred.
+--- /src/com/google/javascript/rhino/jstype/RecordType.java
++++ /src/com/google/javascript/rhino/jstype/RecordType.java
+@@ -65,8 +65,12 @@
+   private static final long serialVersionUID = 1L;
+ 
+   private final SortedMap<String, JSType> properties = Maps.newTreeMap();
++  private final boolean declared;
+   private boolean isFrozen = false;
+ 
++  RecordType(JSTypeRegistry registry, Map<String, RecordProperty> properties) {
++    this(registry, properties, true);
++  }
+ 
+   /**
+    * Creates a record type.
+@@ -80,9 +84,11 @@
+    * @throws IllegalStateException if the {@code RecordProperty} associated
+    *         with a property is null.
+    */
++  RecordType(JSTypeRegistry registry, Map<String, RecordProperty> properties,
++      boolean declared) {
+-  RecordType(JSTypeRegistry registry, Map<String, RecordProperty> properties) {
+     super(registry, null, null);
+     setPrettyPrint(true);
++    this.declared = declared;
+ 
+     for (String property : properties.keySet()) {
+       RecordProperty prop = properties.get(property);
+@@ -90,8 +96,13 @@
+         throw new IllegalStateException(
+             "RecordProperty associated with a property should not be null!");
+       }
++      if (declared) {
+         defineDeclaredProperty(
+             property, prop.getType(), prop.getPropertyNode());
++      } else {
++        defineSynthesizedProperty(
++            property, prop.getType(), prop.getPropertyNode());
++      }
+     }
+ 
+     // Freeze the record type.
+@@ -99,6 +110,9 @@
+   }
+ 
+   /** @return Is this synthesized for internal bookkeeping? */
++  boolean isSynthetic() {
++    return !declared;
++  }
+ 
+   @Override
+   public boolean isEquivalentTo(JSType other) {
+@@ -149,6 +163,7 @@
+     if (that.isRecordType()) {
+       RecordType thatRecord = that.toMaybeRecordType();
+       RecordTypeBuilder builder = new RecordTypeBuilder(registry);
++      builder.setSynthesized(true);
+ 
+       // The greatest subtype consists of those *unique* properties of both
+       // record types. If any property conflicts, then the NO_TYPE type
+--- /src/com/google/javascript/rhino/jstype/RecordTypeBuilder.java
++++ /src/com/google/javascript/rhino/jstype/RecordTypeBuilder.java
+@@ -51,6 +51,7 @@
+  */
+ public class RecordTypeBuilder {
+   private boolean isEmpty = true;
++  private boolean isDeclared = true;
+   private final JSTypeRegistry registry;
+   private final HashMap<String, RecordProperty> properties = Maps.newHashMap();
+ 
+@@ -59,6 +60,9 @@
+   }
+ 
+   /** See the comments on RecordType about synthetic types. */
++  void setSynthesized(boolean synthesized) {
++    isDeclared = !synthesized;
++  }
+ 
+   /**
+    * Adds a property with the given name and type to the record type.
+@@ -89,7 +93,7 @@
+     }
+ 
+     return new RecordType(
++        registry, Collections.unmodifiableMap(properties), isDeclared);
+-        registry, Collections.unmodifiableMap(properties));
+   }
+ 
+   static class RecordProperty {

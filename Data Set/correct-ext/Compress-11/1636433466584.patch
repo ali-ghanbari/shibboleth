@@ -1,0 +1,18 @@
+--- /src/main/java/org/apache/commons/compress/archivers/ArchiveStreamFactory.java
++++ /src/main/java/org/apache/commons/compress/archivers/ArchiveStreamFactory.java
+@@ -237,6 +237,7 @@
+                 return new TarArchiveInputStream(in);
+             }
+             // COMPRESS-117 - improve auto-recognition
++            if (signatureLength >= 512) {
+             try {
+                 TarArchiveInputStream tais = new TarArchiveInputStream(new ByteArrayInputStream(tarheader));
+                 tais.getNextEntry();
+@@ -246,6 +247,7 @@
+                 // autodetection, simply not a TAR
+                 // ignored
+             }
++            }
+         } catch (IOException e) {
+             throw new ArchiveException("Could not use reset and mark operations.", e);
+         }

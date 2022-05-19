@@ -1,0 +1,12 @@
+--- /src/org/mockito/internal/configuration/DefaultInjectionEngine.java
++++ /src/org/mockito/internal/configuration/DefaultInjectionEngine.java
+@@ -90,7 +90,8 @@
+ 
+     private void injectMockCandidate(Class<?> awaitingInjectionClazz, Set<Object> mocks, Object fieldInstance) {
+         for(Field field : orderedInstanceFieldsFrom(awaitingInjectionClazz)) {
++            Object injected = mockCandidateFilter.filterCandidate(mocks, field, fieldInstance).thenInject();
++            mocks.remove(injected);
+-            mockCandidateFilter.filterCandidate(mocks, field, fieldInstance).thenInject();
+         }
+     }
+ 

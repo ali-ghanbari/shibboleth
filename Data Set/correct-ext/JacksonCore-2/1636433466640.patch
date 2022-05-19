@@ -1,0 +1,115 @@
+--- /src/main/java/com/fasterxml/jackson/core/json/ReaderBasedJsonParser.java
++++ /src/main/java/com/fasterxml/jackson/core/json/ReaderBasedJsonParser.java
+@@ -949,6 +949,9 @@
+             --ptr; // need to push back following separator
+             _inputPtr = ptr;
+             // As per #105, need separating space between root values; check here
++            if (_parsingContext.inRoot()) {
++                _verifyRootSpace(ch);
++            }
+             int len = ptr-startPtr;
+             _textBuffer.resetWithShared(_inputBuffer, startPtr, len);
+             return reset(negative, intLen, fractLen, expLen);
+@@ -1078,6 +1081,9 @@
+         // Ok; unless we hit end-of-input, need to push last char read back
+         if (!eof) {
+             --_inputPtr;
++            if (_parsingContext.inRoot()) {
++                _verifyRootSpace(c);
++            }
+         }
+         _textBuffer.setCurrentLength(outPtr);
+         // And there we have it!
+@@ -1159,7 +1165,24 @@
+      * NOTE: caller MUST ensure there is at least one character available;
+      * and that input pointer is AT given char (not past)
+      */
++    private final void _verifyRootSpace(int ch) throws IOException
++    {
+         // caller had pushed it back, before calling; reset
++        ++_inputPtr;
++        switch (ch) {
++        case ' ':
++        case '\t':
++            return;
++        case '\r':
++            _skipCR();
++            return;
++        case '\n':
++            ++_currInputRow;
++            _currInputRowStart = _inputPtr;
++            return;
++        }
++        _reportMissingRootWS(ch);
++    }
+     
+     /*
+     /**********************************************************
+--- /src/main/java/com/fasterxml/jackson/core/json/UTF8StreamJsonParser.java
++++ /src/main/java/com/fasterxml/jackson/core/json/UTF8StreamJsonParser.java
+@@ -1241,6 +1241,9 @@
+         --_inputPtr; // to push back trailing char (comma etc)
+         _textBuffer.setCurrentLength(outPtr);
+         // As per #105, need separating space between root values; check here
++        if (_parsingContext.inRoot()) {
++            _verifyRootSpace(c);
++        }
+ 
+         // And there we have it!
+         return resetInt(negative, intLen);
+@@ -1277,6 +1280,9 @@
+         --_inputPtr; // to push back trailing char (comma etc)
+         _textBuffer.setCurrentLength(outPtr);
+         // As per #105, need separating space between root values; check here
++        if (_parsingContext.inRoot()) {
++            _verifyRootSpace(_inputBuffer[_inputPtr++] & 0xFF);
++        }
+ 
+         // And there we have it!
+         return resetInt(negative, intPartLength);
+@@ -1404,6 +1410,9 @@
+         if (!eof) {
+             --_inputPtr;
+             // As per #105, need separating space between root values; check here
++            if (_parsingContext.inRoot()) {
++                _verifyRootSpace(c);
++            }
+         }
+         _textBuffer.setCurrentLength(outPtr);
+ 
+@@ -1418,8 +1427,25 @@
+      * NOTE: caller MUST ensure there is at least one character available;
+      * and that input pointer is AT given char (not past)
+      */
++    private final void _verifyRootSpace(int ch) throws IOException
++    {
+         // caller had pushed it back, before calling; reset
++        ++_inputPtr;
+         // TODO? Handle UTF-8 char decoding for error reporting
++        switch (ch) {
++        case ' ':
++        case '\t':
++            return;
++        case '\r':
++            _skipCR();
++            return;
++        case '\n':
++            ++_currInputRow;
++            _currInputRowStart = _inputPtr;
++            return;
++        }
++        _reportMissingRootWS(ch);
++    }
+ 
+     /*
+     /**********************************************************
+@@ -2572,9 +2598,6 @@
+                 }
+                 break;
+             default: // e.g. -1
+-                if (i < 32) {
+-                    _throwInvalidSpace(i);
+-                }
+                 _reportInvalidChar(i);
+             }
+         }

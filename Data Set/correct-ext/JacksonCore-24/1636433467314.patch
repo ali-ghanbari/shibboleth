@@ -1,0 +1,64 @@
+--- /src/main/java/com/fasterxml/jackson/core/base/ParserBase.java
++++ /src/main/java/com/fasterxml/jackson/core/base/ParserBase.java
+@@ -866,9 +866,11 @@
+     // @since 2.9.8
+     protected void _reportTooLongIntegral(int expType, String rawNum) throws IOException
+     {
++        if (expType == NR_INT) {
++            reportOverflowInt(rawNum);
++        } else {
++            reportOverflowLong(rawNum);
++        }
+-        final String numDesc = _longIntegerDesc(rawNum);
+-        _reportError("Numeric value (%s) out of range of %s", numDesc,
+-                (expType == NR_LONG) ? "long" : "int");
+     }
+ 
+     /*
+@@ -884,7 +886,7 @@
+             // Let's verify it's lossless conversion by simple roundtrip
+             int result = (int) _numberLong;
+             if (((long) result) != _numberLong) {
++                reportOverflowInt(getText(), currentToken());
+-                _reportError("Numeric value ("+getText()+") out of range of int");
+             }
+             _numberInt = result;
+         } else if ((_numTypesValid & NR_BIGINT) != 0) {
+--- /src/main/java/com/fasterxml/jackson/core/base/ParserMinimalBase.java
++++ /src/main/java/com/fasterxml/jackson/core/base/ParserMinimalBase.java
+@@ -562,11 +562,15 @@
+ 
+     // @since 2.10
+     protected void reportOverflowInt(String numDesc) throws IOException {
++        reportOverflowInt(numDesc, JsonToken.VALUE_NUMBER_INT);
+-        _reportError(String.format("Numeric value (%s) out of range of int (%d - %s)",
+-                _longIntegerDesc(numDesc), Integer.MIN_VALUE, Integer.MAX_VALUE));
+     }
+ 
+     // @since 2.10
++    protected void reportOverflowInt(String numDesc, JsonToken inputType) throws IOException {
++        _reportInputCoercion(String.format("Numeric value (%s) out of range of int (%d - %s)",
++                _longIntegerDesc(numDesc), Integer.MIN_VALUE, Integer.MAX_VALUE),
++                inputType, Integer.TYPE);
++    }
+ 
+     /**
+      * Method called to throw an exception for integral (not floating point) input
+@@ -579,11 +583,15 @@
+ 
+     // @since 2.10
+     protected void reportOverflowLong(String numDesc) throws IOException {
++        reportOverflowLong(numDesc, JsonToken.VALUE_NUMBER_INT);
+-        _reportError(String.format("Numeric value (%s) out of range of long (%d - %s)",
+-                _longIntegerDesc(numDesc), Long.MIN_VALUE, Long.MAX_VALUE));
+     }
+ 
+     // @since 2.10
++    protected void reportOverflowLong(String numDesc, JsonToken inputType) throws IOException {
++        _reportInputCoercion(String.format("Numeric value (%s) out of range of long (%d - %s)",
++                _longIntegerDesc(numDesc), Long.MIN_VALUE, Long.MAX_VALUE),
++                inputType, Long.TYPE);
++    }
+ 
+     /**
+      * @since 2.10

@@ -1,0 +1,38 @@
+--- /src/main/java/org/apache/commons/compress/compressors/CompressorStreamFactory.java
++++ /src/main/java/org/apache/commons/compress/compressors/CompressorStreamFactory.java
+@@ -237,6 +237,9 @@
+                 return new ZCompressorInputStream(in);
+             }
+ 
++            if (DeflateCompressorInputStream.matches(signature, signatureLength)) {
++                return new DeflateCompressorInputStream(in);
++            }
+ 
+             if (XZUtils.matches(signature, signatureLength) &&
+                 XZUtils.isXZCompressionAvailable()) {
+--- /src/main/java/org/apache/commons/compress/compressors/deflate/DeflateCompressorInputStream.java
++++ /src/main/java/org/apache/commons/compress/compressors/deflate/DeflateCompressorInputStream.java
+@@ -30,6 +30,11 @@
+  * @since 1.9
+  */
+ public class DeflateCompressorInputStream extends CompressorInputStream {
++    private static final int MAGIC_1 = 0x78;
++    private static final int MAGIC_2a = 0x01;
++    private static final int MAGIC_2b = 0x5e;
++    private static final int MAGIC_2c = 0x9c;
++    private static final int MAGIC_2d = 0xda;
+     
+     private final InputStream in;
+ 
+@@ -103,4 +108,11 @@
+      * 
+      * @since 1.9
+      */
++    public static boolean matches(byte[] signature, int length) {
++        return length > 3 && signature[0] == MAGIC_1 && (
++                signature[1] == (byte) MAGIC_2a ||
++                signature[1] == (byte) MAGIC_2b ||
++                signature[1] == (byte) MAGIC_2c ||
++                signature[1] == (byte) MAGIC_2d);
++    }
+ }

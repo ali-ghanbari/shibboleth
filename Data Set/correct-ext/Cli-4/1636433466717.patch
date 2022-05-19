@@ -1,0 +1,13 @@
+--- /src/java/org/apache/commons/cli/Parser.java
++++ /src/java/org/apache/commons/cli/Parser.java
+@@ -295,7 +295,9 @@
+         if (requiredOptions.size() > 0)
+         {
+             Iterator iter = requiredOptions.iterator();
++            StringBuffer buff = new StringBuffer("Missing required option");
++            buff.append(requiredOptions.size() == 1 ? "" : "s");
++            buff.append(": ");
+-            StringBuffer buff = new StringBuffer();
+ 
+ 
+             // loop through the required options

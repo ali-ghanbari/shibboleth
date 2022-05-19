@@ -1,0 +1,14 @@
+--- /src/main/java/org/apache/commons/compress/archivers/zip/ZipArchiveInputStream.java
++++ /src/main/java/org/apache/commons/compress/archivers/zip/ZipArchiveInputStream.java
+@@ -244,9 +244,10 @@
+         if (sig.equals(ZipLong.CFH_SIG) || sig.equals(ZipLong.AED_SIG)) {
+             hitCentralDirectory = true;
+             skipRemainderOfArchive();
++            return null;
+         }
+         if (!sig.equals(ZipLong.LFH_SIG)) {
++            throw new ZipException(String.format("Unexpected record signature: 0X%X", sig.getValue()));
+-            return null;
+         }
+ 
+         int off = WORD;

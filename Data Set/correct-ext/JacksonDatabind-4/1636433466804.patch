@@ -1,0 +1,40 @@
+--- /src/main/java/com/fasterxml/jackson/databind/deser/std/StringArrayDeserializer.java
++++ /src/main/java/com/fasterxml/jackson/databind/deser/std/StringArrayDeserializer.java
+@@ -56,6 +56,7 @@
+         int ix = 0;
+         JsonToken t;
+ 
++        try {
+             while ((t = jp.nextToken()) != JsonToken.END_ARRAY) {
+                 // Ok: no need to convert Strings, but must recognize nulls
+                 String value;
+@@ -72,7 +73,10 @@
+                 }
+                 chunk[ix++] = value;
+             }
++        } catch (Exception e) {
+             // note: pass String.class, not String[].class, as we need element type for error info
++            throw JsonMappingException.wrapWithPath(e, String.class, ix);
++        }
+         String[] result = buffer.completeAndClearBuffer(chunk, ix, String.class);
+         ctxt.returnObjectBuffer(buffer);
+         return result;
+@@ -90,6 +94,7 @@
+         int ix = 0;
+         JsonToken t;
+ 
++        try {
+             while ((t = jp.nextToken()) != JsonToken.END_ARRAY) {
+                 // Ok: no need to convert Strings, but must recognize nulls
+                 String value = (t == JsonToken.VALUE_NULL) ? deser.getNullValue() : deser.deserialize(jp, ctxt);
+@@ -99,7 +104,10 @@
+                 }
+                 chunk[ix++] = value;
+             }
++        } catch (Exception e) {
+             // note: pass String.class, not String[].class, as we need element type for error info
++            throw JsonMappingException.wrapWithPath(e, String.class, ix);
++        }
+         String[] result = buffer.completeAndClearBuffer(chunk, ix, String.class);
+         ctxt.returnObjectBuffer(buffer);
+         return result;

@@ -1,0 +1,22 @@
+--- /src/main/java/org/apache/commons/cli/Option.java
++++ /src/main/java/org/apache/commons/cli/Option.java
+@@ -69,7 +69,7 @@
+     private int numberOfArgs = UNINITIALIZED;
+ 
+     /** the type of this Option */
++    private Class type = String.class;
+-    private Class type;
+ 
+     /** the list of argument values **/
+     private List values = new ArrayList();
+--- /src/main/java/org/apache/commons/cli/OptionBuilder.java
++++ /src/main/java/org/apache/commons/cli/OptionBuilder.java
+@@ -81,7 +81,7 @@
+         description = null;
+         argName = null;
+         longopt = null;
++        type = String.class;
+-        type = null;
+         required = false;
+         numberOfArgs = Option.UNINITIALIZED;
+         optionalArg = false;

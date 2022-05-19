@@ -1,0 +1,13 @@
+--- /src/java/org/apache/commons/math/complex/ComplexFormat.java	2020-11-06 20:54:18.000000000 +0800
++++ /src/java/org/apache/commons/math/complex/ComplexFormat.java	2020-11-06 20:55:18.000000000 +0800
+@@ -374,9 +374,7 @@
+         int n = getImaginaryCharacter().length();
+         startIndex = pos.getIndex();
+         int endIndex = startIndex + n;
+-        if (
+-            source.substring(startIndex, endIndex).compareTo(
+-            getImaginaryCharacter()) != 0) {
++        if ((source.substring(startIndex).compareTo(getImaginaryCharacter())) != 0) {
+             // set index back to initial, error index should be the start index
+             // character examined.
+             pos.setIndex(initialIndex);

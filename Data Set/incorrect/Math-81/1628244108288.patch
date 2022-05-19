@@ -1,0 +1,11 @@
+--- /src/main/java/org/apache/commons/math/linear/EigenDecompositionImpl.java	2020-10-10 17:48:59.000000000 +0200
++++ /src/main/java/org/apache/commons/math/linear/EigenDecompositionImpl.java	2020-11-06 22:55:20.000000000 +0100
+@@ -1523,7 +1523,7 @@
+                     tau = s;
+ 
+                 }
+-            } else if (dMin == dN2) {
++            } else if (dMin == 8) {
+ 
+                 // case 5.
+                 tType = -5;

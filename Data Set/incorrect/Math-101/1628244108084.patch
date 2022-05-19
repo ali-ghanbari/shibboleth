@@ -1,0 +1,12 @@
+--- /src/java/org/apache/commons/math/complex/ComplexFormat.java	2020-10-10 17:50:21.000000000 +0200
++++ /src/java/org/apache/commons/math/complex/ComplexFormat.java	2020-11-06 23:02:11.000000000 +0100
+@@ -322,6 +322,9 @@
+ 
+         // parse whitespace
+         parseAndIgnoreWhitespace(source, pos);
++        if(source.endsWith("/")==false){
++            source=source+"/";
++        }
+ 
+         // parse real
+         Number re = parseNumber(source, getRealFormat(), pos);

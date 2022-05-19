@@ -1,0 +1,46 @@
+--- /src/main/java/com/fasterxml/jackson/core/util/JsonParserSequence.java
++++ /src/main/java/com/fasterxml/jackson/core/util/JsonParserSequence.java
+@@ -32,6 +32,7 @@
+      *
+      * @since 2.8
+      */
++    protected boolean _suppressNextToken;
+     
+     /*
+      *******************************************************
+@@ -42,6 +43,7 @@
+     protected JsonParserSequence(JsonParser[] parsers)
+     {
+         super(parsers[0]);
++        _suppressNextToken = delegate.hasCurrentToken();
+         _parsers = parsers;
+         _nextParser = 1;
+     }
+@@ -101,15 +103,21 @@
+     }
+ 
+     @Override
++    public JsonToken nextToken() throws IOException
+-    public JsonToken nextToken() throws IOException, JsonParseException
+     {
++        if (delegate == null) {
++            return null;
++        }
++        if (_suppressNextToken) {
++            _suppressNextToken = false;
++            return delegate.currentToken();
++        }
+         JsonToken t = delegate.nextToken();
++        while ((t == null) && switchToNext()) {
++            t = delegate.hasCurrentToken()
++                    ? delegate.currentToken() : delegate.nextToken();
+-        if (t != null) return t;
+-        while (switchToNext()) {
+-            t = delegate.nextToken();
+-            if (t != null) return t;
+         }
++        return t;
+-        return null;
+     }
+ 
+     /*

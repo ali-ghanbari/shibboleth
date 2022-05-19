@@ -1,0 +1,19 @@
+--- /src/main/java/org/jsoup/nodes/FormElement.java
++++ /src/main/java/org/jsoup/nodes/FormElement.java
+@@ -77,6 +77,7 @@
+         // iterate the form control elements and accumulate their values
+         for (Element el: elements) {
+             if (!el.tag().isFormSubmittable()) continue; // contents are form listable, superset of submitable
++            if (el.hasAttr("disabled")) continue; // skip disabled form inputs
+             String name = el.attr("name");
+             if (name.length() == 0) continue;
+             String type = el.attr("type");
+@@ -96,7 +97,7 @@
+             } else if ("checkbox".equalsIgnoreCase(type) || "radio".equalsIgnoreCase(type)) {
+                 // only add checkbox or radio if they have the checked attribute
+                 if (el.hasAttr("checked")) {
++                    final String val = el.val().length() >  0 ? el.val() : "on";
+-                    final String val = el.val();
+                     data.add(HttpConnection.KeyVal.create(name, val));
+                 }
+             } else {

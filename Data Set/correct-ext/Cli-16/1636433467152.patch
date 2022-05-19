@@ -1,0 +1,64 @@
+--- /src/java/org/apache/commons/cli2/Option.java
++++ /src/java/org/apache/commons/cli2/Option.java
+@@ -203,6 +203,7 @@
+      *
+      * @return the parent of this option
+      */
++    Option getParent();
+ 
+     /**
+      * Sets the parent of this option. This method is called when the option is
+@@ -213,4 +214,5 @@
+      *
+      * @param parent the parent option
+      */
++    void setParent(Option parent);
+ }
+--- /src/java/org/apache/commons/cli2/commandline/WriteableCommandLineImpl.java
++++ /src/java/org/apache/commons/cli2/commandline/WriteableCommandLineImpl.java
+@@ -71,6 +71,11 @@
+         }
+ 
+         // ensure that all parent options are also added
++        Option parent = option.getParent();
++        while (parent != null && !options.contains(parent)) {
++            options.add(parent);
++            parent = parent.getParent();
++        }
+     }
+ 
+     public void addValue(final Option option,
+--- /src/java/org/apache/commons/cli2/option/GroupImpl.java
++++ /src/java/org/apache/commons/cli2/option/GroupImpl.java
+@@ -89,6 +89,7 @@
+         // process the options
+         for (final Iterator i = options.iterator(); i.hasNext();) {
+             final Option option = (Option) i.next();
++            option.setParent(this);
+ 
+             if (option instanceof Argument) {
+                 i.remove();
+--- /src/java/org/apache/commons/cli2/option/OptionImpl.java
++++ /src/java/org/apache/commons/cli2/option/OptionImpl.java
+@@ -33,6 +33,7 @@
+ public abstract class OptionImpl implements Option {
+     private final int id;
+     private final boolean required;
++    private Option parent;
+ 
+     /**
+      * Creates an OptionImpl with the specified id
+@@ -125,7 +126,13 @@
+         // nothing to do normally
+     }
+ 
++    public Option getParent() {
++        return parent;
++    }
+ 
++    public void setParent(Option parent) {
++        this.parent = parent;
++    }
+ 
+     protected void checkPrefixes(final Set prefixes) {
+         // nothing to do if empty prefix list

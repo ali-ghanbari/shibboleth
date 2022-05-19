@@ -1,0 +1,17 @@
+--- /src/com/google/javascript/rhino/TokenStream.java
++++ /src/com/google/javascript/rhino/TokenStream.java
+@@ -191,12 +191,13 @@
+       int length = s.length();
+ 
+       if (length == 0 ||
++          Character.isIdentifierIgnorable(s.charAt(0)) ||
+           !Character.isJavaIdentifierStart(s.charAt(0))) {
+         return false;
+       }
+ 
+       for (int i = 1; i < length; i++) {
++        if (Character.isIdentifierIgnorable(s.charAt(i)) ||
+-        if (
+             !Character.isJavaIdentifierPart(s.charAt(i))) {
+           return false;
+         }

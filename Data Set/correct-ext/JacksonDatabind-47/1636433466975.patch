@@ -1,0 +1,22 @@
+--- /src/main/java/com/fasterxml/jackson/databind/AnnotationIntrospector.java
++++ /src/main/java/com/fasterxml/jackson/databind/AnnotationIntrospector.java
+@@ -813,10 +813,19 @@
+                 //    static typing this way
+                 type = type.withStaticTyping();
+             } else {
++                Class<?> currRaw = type.getRawClass();
+                 try {
+                     // 11-Oct-2015, tatu: For deser, we call `TypeFactory.constructSpecializedType()`,
+                     //   may be needed here too in future?
++                    if (serClass.isAssignableFrom(currRaw)) { // common case
+                         type = tf.constructGeneralizedType(type, serClass);
++                    } else if (currRaw.isAssignableFrom(serClass)) { // specialization, ok as well
++                        type = tf.constructSpecializedType(type, serClass);
++                    } else {
++                        throw new JsonMappingException(null,
++                                String.format("Can not refine serialization type %s into %s; types not related",
++                                        type, serClass.getName()));
++                    }
+                 } catch (IllegalArgumentException iae) {
+                     throw new JsonMappingException(null,
+                             String.format("Failed to widen type %s with annotation (value %s), from '%s': %s",

@@ -1,0 +1,27 @@
+--- /src/main/java/org/apache/commons/compress/archivers/zip/ZipArchiveEntry.java
++++ /src/main/java/org/apache/commons/compress/archivers/zip/ZipArchiveEntry.java
+@@ -61,6 +61,7 @@
+      */
+     public ZipArchiveEntry(String name) {
+         super(name);
++        setName(name);
+     }
+ 
+     /**
+@@ -459,11 +460,13 @@
+             return false;
+         }
+         ZipArchiveEntry other = (ZipArchiveEntry) obj;
++        String myName = getName();
++        String otherName = other.getName();
++        if (myName == null) {
++            if (otherName != null) {
+-        if (name == null) {
+-            if (other.name != null) {
+                 return false;
+             }
++        } else if (!myName.equals(otherName)) {
+-        } else if (!name.equals(other.name)) {
+             return false;
+         }
+         return true;

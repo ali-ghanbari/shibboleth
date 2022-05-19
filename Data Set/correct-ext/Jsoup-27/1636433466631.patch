@@ -1,0 +1,13 @@
+--- /src/main/java/org/jsoup/helper/DataUtil.java
++++ /src/main/java/org/jsoup/helper/DataUtil.java
+@@ -129,8 +129,9 @@
+         Matcher m = charsetPattern.matcher(contentType);
+         if (m.find()) {
+             String charset = m.group(1).trim();
++            if (Charset.isSupported(charset)) return charset;
+             charset = charset.toUpperCase(Locale.ENGLISH);
++            if (Charset.isSupported(charset)) return charset;
+-            return charset;
+         }
+         return null;
+     }

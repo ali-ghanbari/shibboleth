@@ -1,0 +1,41 @@
+--- /src/main/java/com/fasterxml/jackson/databind/introspect/POJOPropertiesCollector.java
++++ /src/main/java/com/fasterxml/jackson/databind/introspect/POJOPropertiesCollector.java
+@@ -4,6 +4,7 @@
+ import java.util.*;
+ 
+ import com.fasterxml.jackson.annotation.JsonAnySetter;
++import com.fasterxml.jackson.annotation.JsonProperty.Access;
+ import com.fasterxml.jackson.databind.*;
+ import com.fasterxml.jackson.databind.cfg.HandlerInstantiator;
+ import com.fasterxml.jackson.databind.cfg.MapperConfig;
+@@ -728,7 +729,10 @@
+         while (it.hasNext()) {
+             POJOPropertyBuilder prop = it.next();
+             // 26-Jan-2017, tatu: [databind#935]: need to denote removal of
++            Access acc = prop.removeNonVisible(inferMutators);
++            if (!_forSerialization && (acc == Access.READ_ONLY)) {
++                _collectIgnorals(prop.getName());
++            }
+-            prop.removeNonVisible(inferMutators);
+         }
+     }
+ 
+--- /src/main/java/com/fasterxml/jackson/databind/introspect/POJOPropertyBuilder.java
++++ /src/main/java/com/fasterxml/jackson/databind/introspect/POJOPropertyBuilder.java
+@@ -641,7 +641,7 @@
+      * @param inferMutators Whether mutators can be "pulled in" by visible
+      *    accessors or not. 
+      */
++    public JsonProperty.Access removeNonVisible(boolean inferMutators)
+-    public void removeNonVisible(boolean inferMutators)
+     {
+         /* 07-Jun-2015, tatu: With 2.6, we will allow optional definition
+          *  of explicit access type for property; if not "AUTO", it will
+@@ -680,6 +680,7 @@
+                 _setters = _removeNonVisible(_setters);
+             }
+         }
++        return acc;
+     }
+ 
+     /**

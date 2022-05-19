@@ -1,0 +1,13 @@
+diff --git a/src/com/google/javascript/jscomp/CompilationLevel.java b/src/com/google/javascript/jscomp/CompilationLevel.java
+index cd1241f4..3723aee4 100644
+--- /src/com/google/javascript/jscomp/CompilationLevel.java
++++ /src/com/google/javascript/jscomp/CompilationLevel.java
+@@ -91,7 +91,7 @@ public enum CompilationLevel {
+   private static void applySafeCompilationOptions(CompilerOptions options) {
+     // Does not call applyBasicCompilationOptions(options) because the call to
+     // skipAllCompilerPasses() cannot be easily undone.
++    options.closurePass = false;
+-    options.closurePass = true;
+     options.variableRenaming = VariableRenamingPolicy.LOCAL;
+     options.inlineLocalVariables = true;
+     options.checkGlobalThisLevel = CheckLevel.OFF;
