@@ -231,4 +231,4 @@ Please make sure that you have the following software installed on your computer
 * JDK 8u171, 8u231, or, 8u281 is required in order to be able to build and test Defects4J projects; one Defects4J bug, namely Lang-5, is compatible with JDK 7u80 only.
 * Python 3.9 and Python libraries joblib 1.1.0, numpy 1.21.5, pandas 1.3.5, and scikit-learn 1.0.2
 
-To install Python libraries automatically, you can use the file `requirements`.
+To install Python libraries automatically, you can use the file `requirements.txt`.
