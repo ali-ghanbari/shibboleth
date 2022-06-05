@@ -226,7 +226,7 @@ Last but not least, the last field reports that this patch is coming from the da
 
 ## System Requirements
 Please make sure that you have the following software installed on your computer in order to be able to run the software artifact shipped in this repository.
-* Ubuntu Linux or macO.
+* Ubuntu Linux or macOS.
 * Maven v3.2+ if you wish to use Shibboleth as a Maven plugin.
 * JDK 8u171, 8u231, or, 8u281 is required in order to be able to build and test Defects4J projects; one Defects4J bug, namely Lang-5, is compatible with JDK 7u80 only.
 * Python 3.9 and Python libraries joblib 1.1.0, numpy 1.21.5, pandas 1.3.5, and scikit-learn 1.0.2
